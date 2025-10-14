@@ -298,6 +298,7 @@ input[type="checkbox"] {
   border-radius: 50%;
   background: linear-gradient(180deg, #1a1a1a, #2a2a2a);
   border: 2px solid var(--border-color);
+  display: none; /* Скрываем пустой аватар-плейсхолдер */
 }
 
 .user-details {
@@ -530,6 +531,25 @@ input[type="checkbox"] {
 .store-actions {
   margin-top: 20px;
   text-align: center;
+}
+
+.additional-plans {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.additional-plans label {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.additional-plans-dropdown {
+  min-width: 180px;
 }
 
 .store-note {

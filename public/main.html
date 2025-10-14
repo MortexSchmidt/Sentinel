@@ -29,7 +29,6 @@
             <div id="storeStatus" class="store-status">Статус: <span id="planStatus">Нет подписки</span></div>
           </div>
         </div>
-        <button id="authBtn" class="btn-primary auth-btn">Войти через Telegram</button>
       </div>
 
       <!-- Subscription Plans -->
@@ -82,6 +81,20 @@
 
       <div class="store-actions">
         <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
+
+        <!-- Additional Plans Dropdown -->
+        <div class="additional-plans">
+          <label for="additionalPlansSelect">Другие тарифы:</label>
+          <select id="additionalPlansSelect" class="dropdown additional-plans-dropdown">
+            <option value="">Выберите тариф...</option>
+            <option value="1">1 День - Лицензия</option>
+            <option value="14">14 Дней - Лицензия</option>
+            <option value="60">60 Дней - Лицензия</option>
+            <option value="90">90 Дней - Лицензия</option>
+            <option value="180">180 Дней - Лицензия</option>
+          </select>
+          <button id="addPlanBtn" class="btn-secondary" style="margin-left: 8px;">Добавить</button>
+        </div>
       </div>
 
       <p class="store-note">Выберите тариф и нажмите Купить для оформления подписки</p>

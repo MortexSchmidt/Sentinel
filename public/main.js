@@ -7,7 +7,16 @@
   const PLANS = [
     {days: 7, label: '7 дней', price: 179, description: 'Неделя доступа'},
     {days: 30, label: '30 дней', price: 358, description: 'Месяц доступа', popular: true},
-    {days: 0, label: 'Навсегда', price: 4491, description: 'Перманентный доступ'}
+    {days: 365, label: '365 дней', price: 3956, description: 'Год доступа'}
+  ];
+
+  // Additional plans for dropdown
+  const ADDITIONAL_PLANS = [
+    {days: 1, label: '1 День', price: 50, description: 'Один день доступа'},
+    {days: 14, label: '14 Дней', price: 120, description: 'Две недели доступа'},
+    {days: 60, label: '60 Дней', price: 600, description: 'Два месяца доступа'},
+    {days: 90, label: '90 Дней', price: 850, description: 'Три месяца доступа'},
+    {days: 180, label: '180 Дней', price: 1500, description: 'Шесть месяцев доступа'}
   ];
 
   // Load user data
@@ -338,6 +347,8 @@
     const giftUsername = document.getElementById('giftUsername');
     const cancelGiftBtn = document.getElementById('cancelGiftBtn');
     const sendGiftBtn = document.getElementById('sendGiftBtn');
+    const additionalPlansSelect = document.getElementById('additionalPlansSelect');
+    const addPlanBtn = document.getElementById('addPlanBtn');
 
     // Auth button
     if (authBtn) {
@@ -415,6 +426,62 @@
           alert('Ошибка сети');
         }
       });
+    }
+
+    // Add additional plan from dropdown
+    if (addPlanBtn && additionalPlansSelect) {
+      addPlanBtn.addEventListener('click', () => {
+        const selectedValue = additionalPlansSelect.value;
+        if (!selectedValue) {
+          alert('Выберите тариф из списка');
+          return;
+        }
+
+        const selectedPlan = ADDITIONAL_PLANS.find(plan => plan.days.toString() === selectedValue);
+        if (selectedPlan) {
+          // Add temporary plan to the grid
+          addTemporaryPlan(selectedPlan);
+
+          // Reset dropdown
+          additionalPlansSelect.value = '';
+
+          console.log('[store] added temporary plan:', selectedPlan);
+        }
+      });
+    }
+  }
+
+  // Add temporary plan to the grid
+  function addTemporaryPlan(plan) {
+    const plansGrid = document.getElementById('plansGrid');
+    if (!plansGrid) return;
+
+    const planCard = document.createElement('div');
+    planCard.className = 'plan-card';
+    planCard.dataset.days = plan.days;
+
+    planCard.innerHTML = `
+      <div class="plan-title">${plan.label}</div>
+      <div class="plan-price">${plan.price} руб.</div>
+      <div class="plan-description">${plan.description}</div>
+    `;
+
+    planCard.addEventListener('click', () => {
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+      planCard.classList.add('selected');
+
+      const buyBtn = document.getElementById('buyBtn');
+      if (buyBtn) {
+        buyBtn.disabled = false;
+      }
+    });
+
+    plansGrid.appendChild(planCard);
+
+    // Enable buy button
+    const buyBtn = document.getElementById('buyBtn');
+    if (buyBtn) {
+      buyBtn.disabled = false;
     }
   }
 
