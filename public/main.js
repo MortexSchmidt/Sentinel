@@ -368,19 +368,19 @@
 
   // Store functionality
   function initStore() {
-    const authBtn = document.getElementById('authBtn');
-    const buyBtn = document.getElementById('buyBtn');
-    const showGiftBtn = document.getElementById('showGiftBtn');
-    const giftSection = document.getElementById('giftSection');
-    const giftUsername = document.getElementById('giftUsername');
-    const cancelGiftBtn = document.getElementById('cancelGiftBtn');
-    const sendGiftBtn = document.getElementById('sendGiftBtn');
-    const additionalPlansSelect = document.getElementById('additionalPlansSelect');
-    const addPlanBtn = document.getElementById('addPlanBtn');
-    // Ensure we reference the show-more button and additional grid here as well
-    const showMoreBtn = document.getElementById('showMoreBtn');
-    const additionalGrid = document.getElementById('additionalPlansGrid');
-    console.log('[store] initStore elements:', { showMoreBtn: !!showMoreBtn, additionalGrid: !!additionalGrid });
+  const authBtn = document.getElementById('authBtn');
+  const buySelfBtn = document.getElementById('buySelfBtn');
+  const giftFriendBtn = document.getElementById('giftFriendBtn');
+  const selectedPlanActions = document.getElementById('selectedPlanActions');
+  const selectedPlanInfo = document.getElementById('selectedPlanInfo');
+  const giftSection = document.getElementById('giftSection');
+  const giftUsername = document.getElementById('giftUsername');
+  const cancelGiftBtn = document.getElementById('cancelGiftBtn');
+  const sendGiftBtn = document.getElementById('sendGiftBtn');
+  // Ensure we reference the show-more button and additional grid here as well
+  const showMoreBtn = document.getElementById('showMoreBtn');
+  const additionalGrid = document.getElementById('additionalPlansGrid');
+  console.log('[store] initStore elements:', { showMoreBtn: !!showMoreBtn, additionalGrid: !!additionalGrid, selectedPlanActions: !!selectedPlanActions });
 
     // Auth button
     if (authBtn) {
@@ -391,26 +391,41 @@
       });
     }
 
-    // Show gift section
-    if (showGiftBtn) {
-      showGiftBtn.addEventListener('click', () => {
-        console.log('[store] show gift section');
-        giftSection.classList.remove('hidden');
-        showGiftBtn.parentElement.classList.add('hidden');
+    // Gift to friend: open gift section for currently selected plan
+    if (giftFriendBtn) {
+      giftFriendBtn.addEventListener('click', () => {
+        console.log('[store] giftFriendBtn clicked');
+        const selectedPlan = document.querySelector('.plan-card.selected');
+        if (!selectedPlan) {
+          alert('Выберите тариф для подарка');
+          return;
+        }
+        // hide per-plan actions while gifting
+        if (selectedPlanActions) selectedPlanActions.classList.add('hidden');
+        if (giftSection) giftSection.classList.remove('hidden');
+        if (giftUsername) giftUsername.focus();
+
+        // populate selected plan info in gift preview
+        const giftSelectedPlan = document.getElementById('giftSelectedPlan');
+        if (giftSelectedPlan) {
+          const title = selectedPlan.querySelector('.plan-title')?.textContent || (selectedPlan.dataset.days + ' дней');
+          const price = selectedPlan.querySelector('.plan-price')?.textContent || '';
+          giftSelectedPlan.textContent = `${title} — ${price}`;
+        }
       });
     }
 
-    // Cancel gift
+    // Cancel gift: hide gift section and restore per-plan actions
     if (cancelGiftBtn) {
       cancelGiftBtn.addEventListener('click', () => {
         console.log('[store] cancel gift');
         giftSection.classList.add('hidden');
-        showGiftBtn.parentElement.classList.remove('hidden');
         if (giftUsername) giftUsername.value = '';
+        if (selectedPlanActions) selectedPlanActions.classList.remove('hidden');
       });
     }
 
-    // Gift username input handler
+    // Gift username input handler (show preview for current selected plan)
     if (giftUsername) {
       giftUsername.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
@@ -422,16 +437,16 @@
       });
     }
 
-    // Send gift
+    // Send gift for currently selected plan
     if (sendGiftBtn) {
       sendGiftBtn.addEventListener('click', async () => {
-        const selectedPlan = document.querySelector('.gift-plan-card.selected');
-        if (!selectedPlan) {
+        const mainSelectedPlan = document.querySelector('.plan-card.selected');
+        if (!mainSelectedPlan) {
           alert('Выберите тариф для подарка');
           return;
         }
 
-        const days = parseInt(selectedPlan.dataset.days);
+        const days = parseInt(mainSelectedPlan.dataset.days);
         const to = giftUsername.value.trim();
         const from = pageChatId;
 
@@ -533,10 +548,10 @@
         document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
         planCard.classList.add('selected');
 
-        const buyBtn = document.getElementById('buyBtn');
-        if (buyBtn) {
-          buyBtn.disabled = false;
-        }
+        const actions = document.getElementById('selectedPlanActions');
+        const info = document.getElementById('selectedPlanInfo');
+        if (actions) actions.classList.remove('hidden');
+        if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
       });
 
       plansGrid.appendChild(planCard);
@@ -548,32 +563,54 @@
 
     // Show preview section
     const giftPreview = document.getElementById('giftPreview');
-    const giftPlansGrid = document.getElementById('giftPlansGrid');
     const giftToName = document.getElementById('giftToNameSmall');
+    const giftSelectedPlan = document.getElementById('giftSelectedPlan');
 
     if (giftPreview) giftPreview.classList.remove('hidden');
     if (giftToName) giftToName.textContent = username;
 
-    // Render gift plans
-    if (giftPlansGrid) {
-      giftPlansGrid.innerHTML = '';
+    // Show which plan will be gifted (use currently selected plan)
+    const mainSelectedPlan = document.querySelector('.plan-card.selected');
+    if (giftSelectedPlan) {
+      if (mainSelectedPlan) {
+        const title = mainSelectedPlan.querySelector('.plan-title')?.textContent || (mainSelectedPlan.dataset.days + ' дней');
+        const price = mainSelectedPlan.querySelector('.plan-price')?.textContent || '';
+        giftSelectedPlan.textContent = `${title} — ${price}`;
+      } else {
+        giftSelectedPlan.textContent = 'Тариф не выбран';
+      }
+    }
 
-      PLANS.forEach(plan => {
-        const giftPlanCard = document.createElement('div');
-        giftPlanCard.className = 'gift-plan-card';
-        giftPlanCard.dataset.days = plan.days;
-
-        giftPlanCard.innerHTML = `
-          <div class="gift-plan-title">${plan.label}</div>
-          <div class="gift-plan-price">${plan.price} руб.</div>
-        `;
-
-        giftPlanCard.addEventListener('click', () => {
-          document.querySelectorAll('.gift-plan-card').forEach(card => card.classList.remove('selected'));
-          giftPlanCard.classList.add('selected');
-        });
-
-        giftPlansGrid.appendChild(giftPlanCard);
+    // Buy selected plan for yourself
+    if (buySelfBtn) {
+      buySelfBtn.addEventListener('click', async () => {
+        const selectedPlan = document.querySelector('.plan-card.selected');
+        if (!selectedPlan) {
+          alert('Выберите тариф для покупки');
+          return;
+        }
+        const days = parseInt(selectedPlan.dataset.days);
+        const chatId = pageChatId;
+        if (!chatId) {
+          alert('Ошибка: необходимо авторизоваться');
+          return;
+        }
+        try {
+          const response = await fetch('/purchase', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ chat_id: chatId, days })
+          });
+          const data = await response.json();
+          if (data.ok) {
+            alert('Покупка успешно завершена!');
+            window.location.reload();
+          } else {
+            alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
+          }
+        } catch (error) {
+          alert('Ошибка сети');
+        }
       });
     }
   }
@@ -610,11 +647,10 @@
         document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
         planCard.classList.add('selected');
 
-        const buyBtn = document.getElementById('buyBtn');
-        if (buyBtn) {
-          buyBtn.disabled = false;
-          console.log('[store] buy button enabled');
-        }
+        const actions = document.getElementById('selectedPlanActions');
+        const info = document.getElementById('selectedPlanInfo');
+        if (actions) actions.classList.remove('hidden');
+        if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
       });
 
       additionalGrid.appendChild(planCard);
@@ -643,10 +679,12 @@
     console.log('- plans grid:', !!document.getElementById('plansGrid'));
     console.log('- gift section:', !!document.getElementById('giftSection'));
     console.log('- user chat_id:', pageChatId);
-    console.log('- auth button:', !!document.getElementById('authBtn'));
-    console.log('- buy button:', !!document.getElementById('buyBtn'));
-    console.log('- showMoreBtn:', !!document.getElementById('showMoreBtn'));
-    console.log('- additionalPlansGrid:', !!document.getElementById('additionalPlansGrid'));
+  console.log('- auth button:', !!document.getElementById('authBtn'));
+  console.log('- selectedPlanActions:', !!document.getElementById('selectedPlanActions'));
+  console.log('- buySelfBtn:', !!document.getElementById('buySelfBtn'));
+  console.log('- giftFriendBtn:', !!document.getElementById('giftFriendBtn'));
+  console.log('- showMoreBtn:', !!document.getElementById('showMoreBtn'));
+  console.log('- additionalPlansGrid:', !!document.getElementById('additionalPlansGrid'));
   };
 
   console.log('[app] script loaded');

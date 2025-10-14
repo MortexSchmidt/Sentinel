@@ -81,12 +81,14 @@
 
       <section class="shop">
         <div id="plans" class="plans grid-plans"></div>
-        <div class="actions">
-          <button id="buyBtn" class="primary" disabled>Купить выбранный тариф</button>
+        <div id="selectedPlanActions" class="purchase-actions hidden">
+          <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
+          <button id="buySelfBtn" class="btn-primary">Купить себе</button>
+          <button id="giftFriendBtn" class="btn-secondary" style="margin-left:8px;">Подарить другу</button>
         </div>
       </section>
 
-      <p class="note">Выберите тариф, нажмите Купить и выберите способ оплаты (демо).</p>
+  <p class="note">Выберите тариф — появятся кнопки «Купить себе» и «Подарить другу».</p>
     </div>
 
     <!-- Providers area (hidden until Buy pressed) -->

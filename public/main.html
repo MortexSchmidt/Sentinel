@@ -47,12 +47,15 @@
           <!-- Additional plans will be loaded here -->
         </div>
 
-        <div class="purchase-section">
-          <button id="buyBtn" class="btn-primary buy-btn" disabled>Купить выбранный тариф</button>
+        <!-- Actions shown when a plan is selected -->
+        <div id="selectedPlanActions" class="purchase-actions hidden">
+          <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
+          <button id="buySelfBtn" class="btn-primary">Купить себе</button>
+          <button id="giftFriendBtn" class="btn-secondary" style="margin-left:12px;">Подарить другу</button>
         </div>
       </div>
 
-      <!-- Gift Section (initially hidden) -->
+      <!-- Gift Section (initially hidden). Now uses the currently selected plan for gifting -->
       <div id="giftSection" class="gift-section hidden">
         <h3>Подарить подписку</h3>
         <div class="gift-form">
@@ -75,10 +78,9 @@
                   <span id="giftToNameSmall">Получатель</span>
                 </div>
               </div>
-            </div>
 
-            <div id="giftPlansGrid" class="gift-plans-grid">
-              <!-- Gift plans will be loaded here -->
+              <!-- Show which plan will be gifted -->
+              <div id="giftSelectedPlan" style="margin-top:12px;font-weight:600;color:var(--text-primary);"></div>
             </div>
 
             <div class="gift-actions">
@@ -89,11 +91,9 @@
         </div>
       </div>
 
-      <div class="store-actions">
-        <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
-      </div>
+      <!-- Global gift button removed. Use кнопки действия при выборе тарифа -->
 
-      <p class="store-note">Выберите тариф и нажмите Купить для оформления подписки</p>
+  <p class="store-note">Выберите тариф — появятся кнопки «Купить себе» и «Подарить другу»</p>
     </div>
   </div>
 

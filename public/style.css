@@ -400,6 +400,27 @@ input[type="checkbox"] {
   min-width: 200px;
 }
 
+/* New per-plan actions shown when a plan is selected */
+.purchase-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.selected-plan-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.gift-selected-plan {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .gift-section {
   background: var(--bg-tertiary);
   border-radius: 8px;
