@@ -161,13 +161,13 @@ function render() {
         const s = await fetch('/auth/status?code=' + encodeURIComponent(code));
         const sj = await s.json();
         if (sj.ok && sj.linked) {
-          clearInterval(poll);
-          clearInterval(interval);
-          // use returned user
-          currentUser = sj.user;
-          // update UI
-          showMain();
-        }
+            clearInterval(poll);
+            clearInterval(interval);
+            // use returned user
+            currentUser = sj.user;
+            // redirect to main page
+            window.location.href = '/main.html';
+          }
       } catch(e){}
     }, 2000);
     return;

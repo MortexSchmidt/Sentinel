@@ -198,6 +198,44 @@ app.post('/purchase', (req, res) => {
   res.json({ ok: true, license: item });
 });
 
+// gift subscription: from -> to (by chat_id or username)
+app.post('/gift', (req, res) => {
+  const { from_chat_id, to_chat_id, to_username, days } = req.body;
+  if (!from_chat_id || (!to_chat_id && !to_username) || typeof days === 'undefined') {
+    return res.status(400).json({ error: 'from_chat_id, to_chat_id|to_username and days required' });
+  }
+  // resolve recipient chat_id by username if necessary
+  let recipientId = to_chat_id;
+  if (!recipientId && to_username) {
+    const users = loadUsers();
+    const uname = to_username.replace(/^@/, '').toLowerCase();
+    const u = users.find(x => x.username && x.username.toLowerCase() === uname);
+    if (u) recipientId = u.chat_id;
+  }
+  if (!recipientId) return res.status(400).json({ error: 'recipient not found' });
+
+  const price = priceForDays(days);
+  if (price === null) return res.status(400).json({ error: 'Неправильный период' });
+
+  const key = generateKey();
+  const now = Date.now();
+  let expires = null;
+  if (days > 0) expires = now + days * 24 * 60 * 60 * 1000;
+
+  const licenses = loadLicenses();
+  const item = { id: nanoid(), chat_id: recipientId, days, price, key, created: now, expires };
+  licenses.push(item);
+  saveLicenses(licenses);
+
+  // notify recipient and sender
+  const textToRecipient = `Вам подарили подписку!\nЛицензия: ${key}\nПериод: ${days === 0 ? 'Навсегда' : days + ' дней'}\nОт: ${from_chat_id}`;
+  const textToSender = `Вы подарили подписку пользователю ${recipientId}.\nЛицензия: ${key}`;
+  sendMessage(recipientId, textToRecipient).catch(e => console.error('sendMessage failed', e));
+  sendMessage(from_chat_id, textToSender).catch(e => console.error('sendMessage failed', e));
+
+  res.json({ ok: true, license: item });
+});
+
 async function sendMessage(chatId, text) {
   if (!BOT_TOKEN) throw new Error('BOT_TOKEN not set');
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
