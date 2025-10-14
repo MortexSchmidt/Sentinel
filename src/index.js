@@ -304,7 +304,7 @@ app.post('/auth', (req, res) => {
   res.json({ ok: true, user });
 });
 
-// generate a short auth code and return it
+// generate a short auth code and return it (WebApp endpoint)
 app.post('/auth/generate', (req, res) => {
   const auth = loadAuthCodes();
   const code = generateCode();
@@ -313,7 +313,42 @@ app.post('/auth/generate', (req, res) => {
   res.json({ ok: true, code });
 });
 
-// status of auth code
+// register auth code (new WebApp endpoint)
+app.post('/auth/register', (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ error: 'code required' });
+
+  const auth = loadAuthCodes();
+  if (auth[code]) {
+    return res.status(400).json({ error: 'code already exists' });
+  }
+
+  auth[code] = { created: Date.now(), linked: false };
+  saveAuthCodes(auth);
+  res.json({ ok: true, code });
+});
+
+// verify auth code (new WebApp endpoint)
+app.post('/auth/verify', (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ error: 'code required' });
+
+  const auth = loadAuthCodes();
+  const entry = auth[code];
+
+  if (!entry) {
+    return res.json({ ok: false, error: 'code not found' });
+  }
+
+  if (entry.linked) {
+    // Return chat_id for redirect
+    return res.json({ ok: true, chat_id: entry.chat_id });
+  } else {
+    return res.json({ ok: false, error: 'code not linked yet' });
+  }
+});
+
+// status of auth code (legacy compatibility)
 app.get('/auth/status', (req, res) => {
   const code = (req.query.code || '').toString().toUpperCase();
   if (!code) return res.status(400).json({ error: 'code required' });

@@ -38,9 +38,9 @@
           window.location.href = '/main.html?chat_id=' + data.chat_id;
           return;
         } else {
-          console.log('[auth] code verification failed or expired');
+          console.log('[auth] code verification failed:', data.error);
           localStorage.removeItem('pendingAuthCode');
-          alert('Код авторизации истек или неверный. Пожалуйста, сгенерируйте новый код.');
+          alert('Код авторизации неверный или уже использован. Пожалуйста, сгенерируйте новый код.');
           return;
         }
       } catch (error) {
@@ -142,7 +142,11 @@
         localStorage.setItem('pendingAuthCode', authCode);
 
         // Send code to server for registration
-        registerAuthCode(authCode);
+        registerAuthCode(authCode).then(() => {
+          console.log('[auth] code registered on server successfully');
+        }).catch(error => {
+          console.error('[auth] failed to register code on server:', error);
+        });
 
         console.log('[auth] code displayed and registered, waiting for bot verification');
       });
