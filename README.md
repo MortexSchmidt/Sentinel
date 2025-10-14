@@ -36,3 +36,20 @@ curl "https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook?url=https://your-app.u
 Если вы хотите, чтобы кнопка открывала встроенный Web App, используйте `WEB_APP_URL` с путём прямо на `webapp.html`, например `https://your-app.up.railway.app/webapp.html`, и установите её в переменных окружения проекта.
 
 Примечание: текущая реализация генерирует лицензионные ключи локально и сохраняет их в `src/licenses.json`.
+
+## Настройка .env
+
+Создайте файл `.env` в корне проекта с содержимым:
+
+```
+BOT_TOKEN=ваш_токен_бота
+WEB_APP_URL=https://sentinel-production-6e0e.up.railway.app
+```
+
+## Установка webhook
+
+После деплоя на Railway, установите webhook командой:
+
+```bash
+curl "https://api.telegram.org/botваш_токен_бота/setWebhook?url=https://sentinel-production-6e0e.up.railway.app/webhook"
+```
