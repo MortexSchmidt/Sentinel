@@ -96,6 +96,19 @@ async function showMain() {
   }
 }
 
+// on load: if chat_id passed in URL, fetch /me and show main
+(function autoResume(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const cid = params.get('chat_id');
+    if (cid) {
+      fetch('/me?chat_id='+encodeURIComponent(cid)).then(r=>r.json()).then(j=>{
+        if (j && j.ok) { currentUser = j.user || { chat_id: cid }; showMain(); }
+      }).catch(()=>{});
+    }
+  }catch(e){}
+})();
+
 function render() {
   plansContainer.innerHTML = '';
   plans.forEach(p => {

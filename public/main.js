@@ -1,13 +1,31 @@
 (async function(){
-  // fetch me (try initDataUnsafe fallback)
+  // fetch me: prefer chat_id from URL, fallback to Telegram WebApp initDataUnsafe
+  const params = new URLSearchParams(window.location.search);
+  let pageChatId = params.get('chat_id') || null;
   async function loadMe(){
-    const chatId = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user.id : null;
-    if (!chatId) return;
-    try{ const r = await fetch('/me?chat_id='+encodeURIComponent(chatId)); const j = await r.json(); if (j.ok){ const u = j.user; document.getElementById('mainName').textContent = u.first_name || u.username || 'Пользователь'; document.getElementById('mainUsername').textContent = u.username ? '@'+u.username : ''; if (u.avatar) { document.getElementById('mainAvatar').src = u.avatar; document.getElementById('mainAvatar').classList.remove('hidden'); } const info = j.active ? (j.daysRemaining ? j.daysRemaining+' дней' : 'Навсегда') : 'Нет подписки'; document.getElementById('subInfo').textContent = 'Подписка: '+info; } }catch(e){}
+    const chatId = pageChatId || ((window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user.id : null);
+    if (!chatId) {
+      document.getElementById('subInfo').textContent = 'Неавторизован — нажмите Войти в Web App';
+      return;
+    }
+    try{
+      const r = await fetch('/me?chat_id='+encodeURIComponent(chatId));
+      const j = await r.json();
+      if (j.ok){
+        const u = j.user || {};
+        document.getElementById('mainName').textContent = u.first_name || u.username || 'Пользователь';
+        document.getElementById('mainUsername').textContent = u.username ? '@'+u.username : '';
+        if (u.avatar) { document.getElementById('mainAvatar').src = u.avatar; document.getElementById('mainAvatar').classList.remove('hidden'); }
+        const info = j.active ? (j.daysRemaining ? j.daysRemaining+' дней' : 'Навсегда') : 'Нет подписки';
+        document.getElementById('subInfo').textContent = 'Подписка: '+info;
+        // store for buy/gift actions
+        pageChatId = chatId;
+      }
+    }catch(e){ console.error('loadMe error', e); }
   }
   loadMe();
 
-  document.getElementById('buyMain').addEventListener('click', ()=>{ location.href = '/webapp.html'; });
+  document.getElementById('buyMain').addEventListener('click', ()=>{ const q = pageChatId ? ('?chat_id='+encodeURIComponent(pageChatId)) : ''; location.href = '/webapp.html'+q; });
   // inline gift flow
   const giftBtn = document.getElementById('giftMain');
   const giftArea = document.getElementById('giftArea');
@@ -49,7 +67,7 @@
     const sel = document.querySelector('#giftPlans .plan.selected'); if (!sel){ alert('Выберите тариф'); return; }
     const days = parseInt(sel.dataset.days);
     const to = giftNick.value.trim();
-    const from = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user.id : null;
+  const from = pageChatId || ((window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user.id : null);
     try{ const res = await fetch('/gift',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ from_chat_id: from, to_username: to, days })}); const j = await res.json(); if (j.ok){ alert('Подарок отправлен'); window.location.reload(); } else alert('Ошибка: '+(j.error||'unknown')); }catch(e){ alert('Сетевая ошибка'); }
   });
 })();
