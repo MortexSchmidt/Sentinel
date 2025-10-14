@@ -1,7 +1,16 @@
 .root{box-sizing:border-box}
 *{box-sizing:border-box}
 :root{--bg:#17212b;--card:#0f1720;--muted:#9fb3bf;--accent:#2a9df4;--accent-contrast:#ffffff}
-body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; background-image: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.00)), repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 8px); background-blend-mode: overlay}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;
+	/* subtle texture: tiled SVG dots + soft gradients */
+	background-image:
+		linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.00)),
+		url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><circle cx='1' cy='1' r='1' fill='%23ffffff' fill-opacity='0.035'/></svg>"),
+		repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 8px);
+	background-blend-mode: overlay;
+	background-repeat: repeat, repeat, repeat;
+	background-size: auto, 6px 6px, auto;
+}
 h1{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 .card{width:100%;max-width:920px;background:transparent;padding:0;border-radius:0;box-shadow:none}
 h1{margin:0 0 6px;font-size:22px}
