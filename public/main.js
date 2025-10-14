@@ -26,50 +26,67 @@
   loadMe();
 
   document.getElementById('buyMain').addEventListener('click', ()=>{ const q = pageChatId ? ('?chat_id='+encodeURIComponent(pageChatId)) : ''; location.href = '/webapp.html'+q; });
-  // inline gift flow - wait for elements to be available
-  let giftBtn, giftArea, giftNick, giftSteps, giftPlans, sendGift, cancelGift;
+  // Simple direct approach - no complex initialization
 
-  function initGiftElements() {
-    console.log('[gift] initGiftElements called');
-    giftBtn = document.getElementById('giftMain');
-    giftArea = document.getElementById('giftArea');
-    giftNick = document.getElementById('giftNick');
-    giftSteps = document.getElementById('giftSteps');
-    giftPlans = document.getElementById('giftPlans');
-    sendGift = document.getElementById('sendGift');
-    cancelGift = document.getElementById('cancelGift');
+  // Simple direct approach
+  console.log('[gift] starting simple initialization...');
 
-    console.log('[gift] elements found:');
-    console.log('- giftBtn:', !!giftBtn);
-    console.log('- giftArea:', !!giftArea);
-    console.log('- giftNick:', !!giftNick);
-    console.log('- giftSteps:', !!giftSteps);
-    console.log('- giftPlans:', !!giftPlans);
-    console.log('- sendGift:', !!sendGift);
-    console.log('- cancelGift:', !!cancelGift);
+  // Wait a bit for DOM to be ready
+  setTimeout(() => {
+    const giftBtn = document.getElementById('giftMain');
+    const giftArea = document.getElementById('giftArea');
+
+    console.log('[gift] direct elements check:');
+    console.log('giftBtn found:', !!giftBtn);
+    console.log('giftArea found:', !!giftArea);
 
     if (giftBtn && giftArea) {
-      console.log('[gift] core elements found, initializing handlers');
-      return true;
+      console.log('[gift] adding simple click handler');
+      giftBtn.onclick = (e) => {
+        console.log('[gift] SIMPLE CLICK WORKS!');
+        e.preventDefault();
+
+        // Hide main screen
+        const screen = document.querySelector('.screen');
+        if (screen) {
+          screen.style.display = 'none';
+        }
+
+        // Show gift area
+        giftArea.style.display = 'block';
+        console.log('[gift] gift area should be visible');
+      };
+
+      console.log('[gift] handler attached successfully');
+    } else {
+      console.error('[gift] elements not found!');
     }
-    console.log('[gift] core elements missing!');
-    return false;
+  }, 100);
+
+  // Also try immediate approach
+  const giftBtn = document.getElementById('giftMain');
+  const giftArea = document.getElementById('giftArea');
+
+  if (giftBtn && giftArea) {
+    console.log('[gift] immediate setup successful');
+    giftBtn.onclick = (e) => {
+      console.log('[gift] IMMEDIATE CLICK WORKS!');
+      e.preventDefault();
+
+      const screen = document.querySelector('.screen');
+      if (screen) {
+        screen.style.display = 'none';
+      }
+
+      giftArea.style.display = 'block';
+    };
   }
 
-  // Initialize when DOM is ready
-  console.log('[gift] initializing gift elements...');
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGiftElements);
-  } else {
-    initGiftElements();
-  }
-
-  // Debug function to check button
+  // Debug function
   window.debugGiftButton = function() {
-    console.log('[gift] debug - checking elements:');
+    console.log('[gift] debug - elements:');
     console.log('giftBtn:', document.getElementById('giftMain'));
     console.log('giftArea:', document.getElementById('giftArea'));
-    console.log('giftBtn onclick:', document.getElementById('giftMain')?.onclick);
   };
 
   const PLANS = [{days:7,label:'7 дней',price:179},{days:30,label:'30 дней',price:358},{days:0,label:'Навсегда',price:4491}];
