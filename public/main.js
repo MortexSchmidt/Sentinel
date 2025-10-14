@@ -90,7 +90,6 @@
     const authBtn = document.getElementById('authBtn');
     const authCodeSection = document.getElementById('authCodeSection');
     const authCodeElement = document.getElementById('authCode');
-    const copyCodeBtn = document.getElementById('copyCodeBtn');
 
     if (authBtn) {
       authBtn.addEventListener('click', () => {
@@ -121,18 +120,25 @@
       });
     }
 
-    // Copy code functionality
-    if (copyCodeBtn) {
-      copyCodeBtn.addEventListener('click', () => {
-        const code = authCodeElement?.textContent;
+    // Click on code to copy command
+    if (authCodeElement) {
+      authCodeElement.addEventListener('click', () => {
+        const code = authCodeElement.textContent;
         if (code && code !== 'XXXXXX') {
-          navigator.clipboard.writeText(code).then(() => {
-            copyCodeBtn.textContent = 'Скопировано!';
+          const command = `/auth ${code}`;
+          navigator.clipboard.writeText(command).then(() => {
+            // Visual feedback
+            authCodeElement.style.background = 'rgba(79, 156, 249, 0.1)';
+            authCodeElement.style.borderColor = 'var(--accent-primary)';
+            authCodeElement.textContent = 'СКОПИРОВАНО!';
+
             setTimeout(() => {
-              copyCodeBtn.textContent = 'Копировать';
-            }, 2000);
+              authCodeElement.style.background = 'var(--bg-card)';
+              authCodeElement.style.borderColor = 'var(--border-color)';
+              authCodeElement.textContent = code;
+            }, 1500);
           }).catch(err => {
-            console.error('[auth] failed to copy code:', err);
+            console.error('[auth] failed to copy command:', err);
           });
         }
       });
