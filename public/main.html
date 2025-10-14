@@ -26,12 +26,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <nav class="nav-menu">
-        <div class="nav-item active" data-tab="general">
+        <div class="nav-item active" data-tab="store">
           <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#4F9CF9" stroke-width="2"/>
-            <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.5 16.5843 19.734 16.824C19.968 17.0637 20.271 17.2338 20.608 17.316C20.945 17.3982 21.302 17.3895 21.64 17.29L21.64 17.29C21.84 17.21 22 17.01 22 16.8V7.2C22 6.99 21.84 6.79 21.64 6.71L12 2L2.36 6.71C2.16 6.79 2 6.99 2 7.2V16.8C2 17.01 2.16 17.21 2.36 17.29L12 22L21.64 17.29C21.84 17.21 22 17.01 22 16.8V15.4C21.7338 15.4 21.48 15.3 21.286 15.12C21.092 14.94 20.968 14.688 20.936 14.4L19.4 15Z" stroke="#4F9CF9" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M3 3H5L5.4 7M7 13H17L21 3H5.4M7 13L5.4 7M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H18.9C19.4 16.5 19.7 15.7 19.3 15.3L17 13H7ZM9 19C9.6 19 10 19.4 10 20S9.6 21 9 21 8 20.6 8 20 8.4 19 9 19ZM20 19C20.6 19 21 19.4 21 20S20.6 21 20 21 19 20.6 19 20 19.4 19 20 19Z" stroke="#4F9CF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>General</span>
+          <span>Магазин</span>
         </div>
         <div class="nav-item" data-tab="main">
           <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -257,25 +256,97 @@
         </div>
       </div>
 
-      <!-- Configs Tab -->
-      <div class="tab-content" data-tab="configs">
+      <!-- Store Tab -->
+      <div class="tab-content active" data-tab="store">
         <div class="content-section">
-          <h2>Configs</h2>
-          <div class="settings-columns">
-            <div class="settings-column">
-              <div class="setting-item">
-                <label>General</label>
-                <select class="dropdown">
-                  <option>Slot 1</option>
-                  <option>Slot 2</option>
-                </select>
+          <h2>Магазин подписок</h2>
+
+          <!-- User Info Section -->
+          <div class="store-user-info">
+            <div class="user-profile">
+              <div class="avatar-wrapper">
+                <img id="storeAvatar" class="store-avatar hidden" src="" alt="avatar">
+                <div class="avatar-placeholder"></div>
+              </div>
+              <div class="user-details">
+                <div id="storeName" class="store-name">Гость</div>
+                <div id="storeUsername" class="store-username">@guest</div>
+                <div id="storeStatus" class="store-status">Статус: <span id="planStatus">Нет подписки</span></div>
+              </div>
+            </div>
+            <button id="authBtn" class="btn-primary auth-btn">Войти через Telegram</button>
+          </div>
+
+          <!-- Subscription Plans -->
+          <div class="subscription-section">
+            <h3>Доступные тарифы</h3>
+            <div id="plansGrid" class="plans-grid">
+              <!-- Plans will be loaded here -->
+            </div>
+            <div class="purchase-section">
+              <button id="buyBtn" class="btn-primary buy-btn" disabled>Купить выбранный тариф</button>
+            </div>
+          </div>
+
+          <!-- Gift Section (initially hidden) -->
+          <div id="giftSection" class="gift-section hidden">
+            <h3>Подарить подписку</h3>
+            <div class="gift-form">
+              <div class="form-group">
+                <label>Кому подарить:</label>
+                <input id="giftUsername" class="text-input" placeholder="Введите @username или chat_id" />
+              </div>
+
+              <div id="giftPreview" class="gift-preview hidden">
+                <div class="gift-info">
+                  <div class="gift-card-preview">
+                    <div class="gift-from">
+                      <span class="gift-label">От:</span>
+                      <div class="gift-avatar-small" id="giftFromAvatarSmall"></div>
+                      <span id="giftFromNameSmall">Вы</span>
+                    </div>
+                    <div class="gift-to">
+                      <span class="gift-label">Кому:</span>
+                      <div class="gift-avatar-small" id="giftToAvatarSmall"></div>
+                      <span id="giftToNameSmall">Получатель</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="giftPlansGrid" class="gift-plans-grid">
+                  <!-- Gift plans will be loaded here -->
+                </div>
+
+                <div class="gift-actions">
+                  <button id="sendGiftBtn" class="btn-primary">Отправить подарок</button>
+                  <button id="cancelGiftBtn" class="btn-secondary">Отмена</button>
+                </div>
               </div>
             </div>
           </div>
-          <div class="config-actions">
-            <button class="btn-primary">Save</button>
-            <button class="btn-secondary">Load</button>
-            <button class="btn-secondary">Open configs folder</button>
+
+          <div class="store-actions">
+            <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
+          </div>
+
+          <p class="store-note">Выберите тариф и способ оплаты для оформления подписки</p>
+        </div>
+      </div>
+
+      <!-- General Tab -->
+      <div class="tab-content" data-tab="general">
+        <div class="content-section">
+          <h2>General</h2>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Menu color</label>
+              <input type="color" value="#4F9CF9" class="color-picker">
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" checked> Switch menu key
+              </label>
+            </div>
           </div>
         </div>
       </div>
