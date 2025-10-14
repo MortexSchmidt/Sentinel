@@ -34,7 +34,7 @@ h1{margin:0 0 6px;font-size:22px}
 .auth-code{background:var(--card);padding:16px;border-radius:10px;margin-top:12px;text-align:center;color:#ffffff}
 .auth-code h2{margin:0 0 8px;font-size:18px;color:#ffffff}
 .auth-code p{margin:6px 0;color:#ffffff}
-.auth-code code{background:#333;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:16px;color:#ffffff}
+.auth-code code{background:#252525;padding:6px 10px;border-radius:6px;cursor:pointer;font-family:monospace;font-size:15px;color:#ffffff;display:inline-block;white-space:nowrap;overflow:auto;max-width:100%;}
 .timer{font-size:20px;font-weight:700;color:var(--accent);margin:12px 0}
 .retry-btn{background:var(--accent);color:var(--accent-contrast);border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;margin-top:12px}
 .retry-btn:hover{background:#0e4ba8}
