@@ -48,9 +48,15 @@ buyBtn.addEventListener('click', async () => {
     });
     const json = await res.json();
     if (json.ok) {
-      buyBtn.innerText = 'Готово';
-      // close webapp if available
-      if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.close();
+      const license = json.license;
+      document.body.innerHTML = `
+        <h1>Покупка успешна!</h1>
+        <p>Лицензия: ${license.key}</p>
+        <p>Период: ${license.days === 0 ? 'Навсегда' : license.days + ' дней'}</p>
+        <p>Цена: ${license.price} рублей</p>
+        <p>Лицензия также отправлена в Telegram.</p>
+        <button onclick="window.Telegram.WebApp.close()">Закрыть</button>
+      `;
     } else {
       alert('Ошибка: ' + (json.error || 'unknown'));
       buyBtn.disabled = false;
