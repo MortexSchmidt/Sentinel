@@ -30,6 +30,7 @@
   let giftBtn, giftArea, giftNick, giftSteps, giftPlans, sendGift, cancelGift;
 
   function initGiftElements() {
+    console.log('[gift] initGiftElements called');
     giftBtn = document.getElementById('giftMain');
     giftArea = document.getElementById('giftArea');
     giftNick = document.getElementById('giftNick');
@@ -38,39 +39,64 @@
     sendGift = document.getElementById('sendGift');
     cancelGift = document.getElementById('cancelGift');
 
-    if (giftBtn && giftArea && giftNick && giftSteps && giftPlans && sendGift && cancelGift) {
-      console.log('[gift] all elements found, initializing');
+    console.log('[gift] elements found:');
+    console.log('- giftBtn:', !!giftBtn);
+    console.log('- giftArea:', !!giftArea);
+    console.log('- giftNick:', !!giftNick);
+    console.log('- giftSteps:', !!giftSteps);
+    console.log('- giftPlans:', !!giftPlans);
+    console.log('- sendGift:', !!sendGift);
+    console.log('- cancelGift:', !!cancelGift);
+
+    if (giftBtn && giftArea) {
+      console.log('[gift] core elements found, initializing handlers');
       return true;
     }
-    console.log('[gift] some elements missing');
+    console.log('[gift] core elements missing!');
     return false;
   }
 
   // Initialize when DOM is ready
+  console.log('[gift] initializing gift elements...');
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initGiftElements);
   } else {
     initGiftElements();
   }
 
+  // Debug function to check button
+  window.debugGiftButton = function() {
+    console.log('[gift] debug - checking elements:');
+    console.log('giftBtn:', document.getElementById('giftMain'));
+    console.log('giftArea:', document.getElementById('giftArea'));
+    console.log('giftBtn onclick:', document.getElementById('giftMain')?.onclick);
+  };
+
   const PLANS = [{days:7,label:'7 дней',price:179},{days:30,label:'30 дней',price:358},{days:0,label:'Навсегда',price:4491}];
 
   if (giftBtn) {
-    giftBtn.addEventListener('click', ()=>{
-      console.log('[gift] open gift area');
-      // animate main content out
-      const screen = document.querySelector('.screen');
-      if (screen) {
-        screen.style.transition = 'opacity 0.3s ease';
-        screen.style.opacity = '0';
-        setTimeout(() => {
+    console.log('[gift] attaching click handler to giftBtn');
+    giftBtn.addEventListener('click', (e)=>{
+      console.log('[gift] CLICK DETECTED on gift button!');
+      e.preventDefault();
+
+      // Simple version first - just show gift area
+      if (giftArea) {
+        console.log('[gift] showing gift area directly');
+        giftArea.style.display = 'block';
+
+        const screen = document.querySelector('.screen');
+        if (screen) {
           screen.style.display = 'none';
-          showGiftArea();
-        }, 300);
+        }
+
+        console.log('[gift] gift area should be visible now');
       } else {
-        showGiftArea();
+        console.error('[gift] giftArea not found!');
       }
     });
+  } else {
+    console.error('[gift] giftBtn not found!');
   }
 
   function showGiftArea() {
@@ -113,19 +139,25 @@
   }
 
   if (cancelGift) {
+    console.log('[gift] attaching click handler to cancelGift');
     cancelGift.addEventListener('click', ()=>{
-      console.log('[gift] cancel gift area');
-      // Hide gift area
-      if (giftArea) {
-        giftArea.style.transition = 'opacity 0.3s ease';
-        giftArea.style.opacity = '0';
+      console.log('[gift] CANCEL CLICK DETECTED!');
 
-        setTimeout(() => {
-          giftArea.style.display = 'none';
-          showMainScreen();
-        }, 300);
+      if (giftArea) {
+        console.log('[gift] hiding gift area');
+        giftArea.style.display = 'none';
       }
+
+      const screen = document.querySelector('.screen');
+      if (screen) {
+        console.log('[gift] showing main screen');
+        screen.style.display = 'block';
+      }
+
+      console.log('[gift] cancel should be complete');
     });
+  } else {
+    console.error('[gift] cancelGift not found!');
   }
 
   function showMainScreen() {
