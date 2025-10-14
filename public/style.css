@@ -62,4 +62,13 @@ h1{margin:0 0 6px;font-size:22px}
 .screen{animation:fadeIn .28s ease both}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+/* remove default blue tap highlight on mobile and focus rings */
+html, body, a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button, .primary, .ghost, .plan, .pm { -webkit-appearance: none; appearance: none; }
+button:focus, .primary:focus, .ghost:focus, .plan:focus, .pm:focus, a:focus { outline: none; box-shadow: none; }
+
+/* keep a minimal keyboard-visible focus for accessibility if needed */
+:focus-visible { outline: 2px solid rgba(21,101,216,0.14); outline-offset: 2px; }
+
+/* legacy fallback */
 button{outline:none}
