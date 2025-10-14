@@ -25,6 +25,11 @@ h1{margin:0 0 6px;font-size:22px}
 .username{color:var(--muted);font-size:13px}
 .status{margin:10px 0;font-size:14px}
 
+/* corner logo */
+.corner-logo{position:absolute;right:18px;top:14px;width:48px;height:48px;object-fit:contain;border-radius:10px}
+.card{position:relative}
+.screen h1{margin-top:4px}
+
 /* auth code styles */
 .auth-code{background:var(--card);padding:16px;border-radius:10px;margin-top:12px;text-align:center;color:#ffffff}
 .auth-code h2{margin:0 0 8px;font-size:18px;color:#ffffff}
