@@ -17,8 +17,40 @@ const nameEl = document.getElementById('name');
 const usernameEl = document.getElementById('username');
 const avatarEl = document.getElementById('avatar');
 const planStatusEl = document.getElementById('planStatus');
-const sndClick = document.getElementById('sndClick');
-const sndSuccess = document.getElementById('sndSuccess');
+// WebAudio short sound generator (click and success chirp)
+let audioCtx = null;
+function ensureAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function playClick() {
+  try {
+    ensureAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = 800;
+    g.gain.value = 0.0001;
+    o.connect(g); g.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    g.gain.linearRampToValueAtTime(0.12, now + 0.001);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    o.start(now); o.stop(now + 0.14);
+  } catch(e){}
+}
+function playSuccess() {
+  try {
+    ensureAudio();
+    const now = audioCtx.currentTime;
+    const o1 = audioCtx.createOscillator();
+    const o2 = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o1.type = 'triangle'; o2.type = 'sine';
+    o1.frequency.value = 880; o2.frequency.value = 1320;
+    g.gain.value = 0.0001;
+    o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+    g.gain.linearRampToValueAtTime(0.18, now + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    o1.start(now); o2.start(now + 0.03);
+    o1.stop(now + 0.28); o2.stop(now + 0.31);
+  } catch(e){}
+}
 
 let selected = null;
 let currentUser = null; // { chat_id, username, first_name }
@@ -34,7 +66,7 @@ function render() {
   });
 }
 
-authBtn && authBtn.addEventListener('click', async () => {
+  authBtn && authBtn.addEventListener('click', async () => {
   // fake auth using Telegram WebApp init data if available
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
     const u = window.Telegram.WebApp.initDataUnsafe.user;
@@ -43,7 +75,7 @@ authBtn && authBtn.addEventListener('click', async () => {
     // post to /auth
     try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
     showMain();
-    sndClick && sndClick.play().catch(()=>{});
+  playClick();
     return;
   }
   // fallback demo auth: prompt for a nickname and generate a fake chat id
@@ -52,7 +84,7 @@ authBtn && authBtn.addEventListener('click', async () => {
   currentUser = { chat_id: 'demo-' + Date.now(), username: nick, first_name: nick, avatar: null };
   try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
   showMain();
-  sndClick && sndClick.play().catch(()=>{});
+  playClick();
 });
 
 buyBtn.addEventListener('click', async () => {
