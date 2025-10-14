@@ -333,8 +333,19 @@
   // Initialize store interface for main.html
   function initStoreInterface() {
     console.log('[store] initializing store interface...');
+
+    // Check if elements exist
+    const showMoreBtn = document.getElementById('showMoreBtn');
+    const additionalGrid = document.getElementById('additionalPlansGrid');
+
+    console.log('[store] elements check:');
+    console.log('- showMoreBtn:', !!showMoreBtn);
+    console.log('- additionalPlansGrid:', !!additionalGrid);
+
     loadUserData();
     renderPlans();
+
+    console.log('[store] store interface initialized');
   }
 
   // Store functionality
@@ -429,24 +440,38 @@
 
     // Show/hide additional plans
     if (showMoreBtn) {
+      console.log('[store] showMoreBtn found, adding click handler');
       showMoreBtn.addEventListener('click', () => {
+        console.log('[store] show more button clicked');
         const additionalGrid = document.getElementById('additionalPlansGrid');
+
+        if (!additionalGrid) {
+          console.error('[store] additionalPlansGrid not found!');
+          return;
+        }
+
+        console.log('[store] additionalGrid found, children count:', additionalGrid.children.length);
         const isHidden = additionalGrid.classList.contains('hidden');
+        console.log('[store] isHidden:', isHidden);
 
         if (isHidden) {
           // Show additional plans
           showMoreBtn.textContent = 'Скрыть тарифы';
-          additionalGrid.classList.remove('hidden');
 
           // Render additional plans if not already rendered
           if (additionalGrid.children.length === 0) {
+            console.log('[store] rendering additional plans...');
             renderAdditionalPlans();
           }
 
-          // Trigger animation
+          // Show the grid
+          additionalGrid.classList.remove('hidden');
+
+          // Trigger animation after a small delay
           setTimeout(() => {
             additionalGrid.classList.add('show');
-          }, 10);
+            console.log('[store] additional plans shown');
+          }, 50);
         } else {
           // Hide additional plans
           showMoreBtn.textContent = 'Показать больше тарифов';
@@ -454,6 +479,7 @@
 
           setTimeout(() => {
             additionalGrid.classList.add('hidden');
+            console.log('[store] additional plans hidden');
           }, 300);
         }
 
@@ -530,12 +556,21 @@
 
   // Render additional plans
   function renderAdditionalPlans() {
-    const additionalGrid = document.getElementById('additionalPlansGrid');
-    if (!additionalGrid) return;
+    console.log('[store] starting to render additional plans...');
 
+    const additionalGrid = document.getElementById('additionalPlansGrid');
+    if (!additionalGrid) {
+      console.error('[store] additionalPlansGrid not found!');
+      return;
+    }
+
+    console.log('[store] clearing additional plans grid...');
     additionalGrid.innerHTML = '';
 
-    ADDITIONAL_PLANS.forEach(plan => {
+    console.log('[store] rendering', ADDITIONAL_PLANS.length, 'additional plans...');
+    ADDITIONAL_PLANS.forEach((plan, index) => {
+      console.log(`[store] rendering plan ${index + 1}:`, plan);
+
       const planCard = document.createElement('div');
       planCard.className = 'plan-card';
       planCard.dataset.days = plan.days;
@@ -547,25 +582,21 @@
       `;
 
       planCard.addEventListener('click', () => {
+        console.log('[store] additional plan clicked:', plan.label);
         document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
         planCard.classList.add('selected');
 
         const buyBtn = document.getElementById('buyBtn');
         if (buyBtn) {
           buyBtn.disabled = false;
+          console.log('[store] buy button enabled');
         }
       });
 
       additionalGrid.appendChild(planCard);
     });
 
-    // Enable buy button if any plan is selected
-    const buyBtn = document.getElementById('buyBtn');
-    if (buyBtn) {
-      buyBtn.disabled = false;
-    }
-
-    console.log('[store] rendered additional plans:', ADDITIONAL_PLANS.length);
+    console.log('[store] additional plans rendered successfully');
   }
 
   // Initialize when DOM is ready
