@@ -585,20 +585,10 @@ input[type="checkbox"] {
   margin-top: 20px;
 }
 
-.plan-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--accent-primary);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.plan-card.selected::before {
-  opacity: 1;
+.plan-card.selected {
+  border-color: var(--accent-primary);
+  background: rgba(79, 156, 249, 0.1);
+  box-shadow: 0 0 20px rgba(79, 156, 249, 0.2);
 }
 
 .plan-card.popular {
