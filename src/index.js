@@ -134,7 +134,7 @@ app.post('/webhook', async (req, res) => {
             user.first_name = from.first_name || user.first_name;
             user.last_name = from.last_name || user.last_name;
           }
-          // try to fetch user's profile photo and save locally
+          // try to fetch user's profile photo file_id and store reference (no disk save)
           try {
             if (BOT_TOKEN) {
               const photosUrl = `https://api.telegram.org/bot${BOT_TOKEN}/getUserProfilePhotos?user_id=${chatId}&limit=1`;
@@ -142,19 +142,10 @@ app.post('/webhook', async (req, res) => {
               const pj = await pr.json();
               if (pj.ok && pj.result && pj.result.total_count > 0 && pj.result.photos && pj.result.photos.length > 0) {
                 const sizes = pj.result.photos[0];
-                // pick the largest size (last)
                 const best = sizes[sizes.length - 1];
                 if (best && best.file_id) {
-                  const fileMeta = await getFile(best.file_id);
-                  if (fileMeta && fileMeta.file_path) {
-                    const dest = path.join(__dirname, '../public/avatars', String(chatId) + path.extname(fileMeta.file_path));
-                    try {
-                      await downloadFilePath(fileMeta.file_path, dest);
-                      user.avatar = '/avatars/' + path.basename(dest);
-                    } catch(e) {
-                      console.error('Failed to download avatar', e);
-                    }
-                  }
+                  user.avatar_file_id = best.file_id;
+                  user.avatar = `/avatar?chat_id=${encodeURIComponent(chatId)}`;
                 }
               }
             }
@@ -225,14 +216,32 @@ async function getFile(fileId) {
   return j.result;
 }
 
-async function downloadFilePath(filePath, dest) {
-  // filePath is like: "file/bot<token>/<path>" or just path; Telegram provides file_path
-  const url = `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('download failed');
-  const buffer = await res.buffer();
-  fs.writeFileSync(dest, buffer);
-}
+// GET /avatar?chat_id=...  -> proxy user's avatar from Telegram (no disk save)
+app.get('/avatar', async (req, res) => {
+  const chat_id = req.query.chat_id;
+  if (!chat_id) return res.status(400).send('chat_id required');
+  const users = loadUsers();
+  const user = users.find(u => u.chat_id && u.chat_id.toString() === chat_id.toString());
+  if (!user || !user.avatar_file_id) return res.status(404).send('no avatar');
+  try {
+    const meta = await getFile(user.avatar_file_id);
+    if (!meta || !meta.file_path) return res.status(404).send('no file');
+    const fileUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${meta.file_path}`;
+    const r = await fetch(fileUrl);
+    if (!r.ok) return res.status(502).send('failed to fetch');
+    const buffer = await r.buffer();
+    const ext = path.extname(meta.file_path).toLowerCase() || '.jpg';
+    let ct = 'image/jpeg';
+    if (ext === '.png') ct = 'image/png';
+    if (ext === '.webp') ct = 'image/webp';
+    res.setHeader('Content-Type', ct);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(buffer);
+  } catch (e) {
+    console.error('avatar proxy error', e);
+    return res.status(500).send('error');
+  }
+});
 
 app.get('/licenses', (req, res) => {
   res.json(loadLicenses());
