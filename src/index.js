@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 const LICENSES_FILE = path.join(__dirname, 'licenses.json');
+const USERS_FILE = path.join(__dirname, 'users.json');
 
 function loadLicenses() {
   try {
@@ -33,6 +34,19 @@ function loadLicenses() {
 
 function saveLicenses(list) {
   fs.writeFileSync(LICENSES_FILE, JSON.stringify(list, null, 2));
+}
+
+function loadUsers() {
+  try {
+    const data = fs.readFileSync(USERS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveUsers(list) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2));
 }
 
 function priceForDays(days) {
@@ -131,6 +145,44 @@ async function sendMessage(chatId, text) {
 
 app.get('/licenses', (req, res) => {
   res.json(loadLicenses());
+});
+
+// simple auth endpoint: store basic profile by chat_id
+app.post('/auth', (req, res) => {
+  const { chat_id, username, first_name, last_name, avatar } = req.body;
+  if (!chat_id) return res.status(400).json({ error: 'chat_id required' });
+  const users = loadUsers();
+  let user = users.find(u => u.chat_id === chat_id);
+  if (!user) {
+    user = { chat_id, username: username || null, first_name: first_name || null, last_name: last_name || null, avatar: avatar || null, created: Date.now() };
+    users.push(user);
+  } else {
+    user.username = username || user.username;
+    user.first_name = first_name || user.first_name;
+    user.last_name = last_name || user.last_name;
+    user.avatar = avatar || user.avatar;
+  }
+  saveUsers(users);
+  res.json({ ok: true, user });
+});
+
+// get profile and license status for a given chat_id
+app.get('/me', (req, res) => {
+  const chat_id = req.query.chat_id;
+  if (!chat_id) return res.status(400).json({ error: 'chat_id required' });
+  const users = loadUsers();
+  const user = users.find(u => u.chat_id.toString() === chat_id.toString()) || null;
+  const licenses = loadLicenses().filter(l => l.chat_id && l.chat_id.toString() === chat_id.toString());
+  // find active license (expires null => forever or expires in future)
+  const now = Date.now();
+  let active = null;
+  for (let i = licenses.length - 1; i >= 0; i--) {
+    const l = licenses[i];
+    if (l.expires === null || l.expires > now) { active = l; break; }
+  }
+  let daysRemaining = 0;
+  if (active && active.expires) daysRemaining = Math.ceil((active.expires - now) / (24 * 60 * 60 * 1000));
+  res.json({ ok: true, user, active, daysRemaining });
 });
 
 app.listen(PORT, () => {

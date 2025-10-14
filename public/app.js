@@ -10,7 +10,18 @@ const plans = [
 
 const plansContainer = document.getElementById('plans');
 const buyBtn = document.getElementById('buyBtn');
+const authBtn = document.getElementById('authBtn');
+const loginScreen = document.getElementById('loginScreen');
+const mainScreen = document.getElementById('mainScreen');
+const nameEl = document.getElementById('name');
+const usernameEl = document.getElementById('username');
+const avatarEl = document.getElementById('avatar');
+const planStatusEl = document.getElementById('planStatus');
+const sndClick = document.getElementById('sndClick');
+const sndSuccess = document.getElementById('sndSuccess');
+
 let selected = null;
+let currentUser = null; // { chat_id, username, first_name }
 
 function render() {
   plansContainer.innerHTML = '';
@@ -23,40 +34,55 @@ function render() {
   });
 }
 
+authBtn && authBtn.addEventListener('click', async () => {
+  // fake auth using Telegram WebApp init data if available
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+    const u = window.Telegram.WebApp.initDataUnsafe.user;
+    const chatId = u.id;
+    currentUser = { chat_id: chatId, username: u.username || null, first_name: u.first_name || null, avatar: null };
+    // post to /auth
+    try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
+    showMain();
+    sndClick && sndClick.play().catch(()=>{});
+    return;
+  }
+  // fallback demo auth: prompt for a nickname and generate a fake chat id
+  const nick = prompt('Введите никнейм для демо:', 'demo_user');
+  if (!nick) return;
+  currentUser = { chat_id: 'demo-' + Date.now(), username: nick, first_name: nick, avatar: null };
+  try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
+  showMain();
+  sndClick && sndClick.play().catch(()=>{});
+});
+
 buyBtn.addEventListener('click', async () => {
   if (!selected) return;
   buyBtn.disabled = true;
   buyBtn.innerText = 'Обработка...';
 
-  // Telegram Web App details
-  const tg = window.Telegram.WebApp;
-  const initDataUnsafe = window.Telegram ? window.Telegram.WebApp.initDataUnsafe : null;
-  const chatId = (initDataUnsafe && initDataUnsafe.user) ? initDataUnsafe.user.id : null;
+  // determine chat id from currentUser or Telegram WebApp
+  const chatId = (currentUser && currentUser.chat_id) ? currentUser.chat_id : (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
 
-  if (!chatId) {
-    alert('Не удалось получить chat_id. Откройте Web App из чата бота.');
-    buyBtn.disabled = false;
-    buyBtn.innerText = 'Купить';
-    return;
-  }
-
+  // if no chat id, use demo fallback
+  const effectiveChatId = chatId || ('demo-purchase-' + Date.now());
   try {
     const res = await fetch('/purchase', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, days: selected.days })
+      body: JSON.stringify({ chat_id: effectiveChatId, days: selected.days })
     });
     const json = await res.json();
     if (json.ok) {
       const license = json.license;
-      document.body.innerHTML = `
-        <h1>Покупка успешна!</h1>
-        <p>Лицензия: ${license.key}</p>
-        <p>Период: ${license.days === 0 ? 'Навсегда' : license.days + ' дней'}</p>
-        <p>Цена: ${license.price} рублей</p>
-        <p>Лицензия также отправлена в Telegram.</p>
-        <button onclick="window.Telegram.WebApp.close()">Закрыть</button>
-      `;
+      // show success card inside mainScreen
+      sndSuccess && sndSuccess.play().catch(()=>{});
+      const info = document.createElement('div');
+      info.className = 'purchase-success';
+      info.innerHTML = `<h2>Покупка успешна!</h2><p>Лицензия: ${license.key}</p><p>Период: ${license.days === 0 ? 'Навсегда' : license.days + ' дней'}</p><p>Цена: ${license.price} руб.</p>`;
+      mainScreen.appendChild(info);
+      planStatusEl.innerText = license.days === 0 ? 'Навсегда' : license.days + ' дней';
+      buyBtn.disabled = false;
+      buyBtn.innerText = 'Купить';
     } else {
       alert('Ошибка: ' + (json.error || 'unknown'));
       buyBtn.disabled = false;

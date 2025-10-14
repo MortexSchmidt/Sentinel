@@ -7,18 +7,39 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="card">
-    <h1>Sentinel Lua</h1>
-    <p class="subtitle">Надёжная лицензия для Nixware</p>
-
-    <div id="plans" class="plans"></div>
-
-    <div class="actions">
-      <button id="buyBtn" class="primary" disabled>Купить</button>
+  <div class="card" id="card">
+    <div id="loginScreen" class="screen">
+      <img src="https://i.ibb.co/XksSPRt3/image-removebg-preview.png" alt="logo" class="logo">
+      <h1>Sentinel Lua</h1>
+      <p class="subtitle">Войдите через Telegram (фейковая авторизация для демо)</p>
+      <div class="actions">
+        <button id="authBtn" class="primary">Войти</button>
+      </div>
     </div>
 
-    <p class="note">Оплата через ваш внешний процессор. После покупки лицензия придёт в чат.</p>
+    <div id="mainScreen" class="screen hidden">
+      <div class="profile">
+        <img id="avatar" src="" alt="avatar" class="avatar hidden">
+        <div class="meta">
+          <div id="name" class="name">Гость</div>
+          <div id="username" class="username">@guest</div>
+        </div>
+      </div>
+
+      <div id="status" class="status">Статус: <span id="planStatus">Нет подписки</span></div>
+
+      <div id="plans" class="plans"></div>
+
+      <div class="actions">
+        <button id="buyBtn" class="primary" disabled>Купить</button>
+      </div>
+
+      <p class="note">Оплата через ваш внешний процессор. После покупки лицензия придёт в чат.</p>
+    </div>
   </div>
+
+  <audio id="sndClick" src="/sounds/click.mp3" preload="auto"></audio>
+  <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
 
   <script src="/app.js"></script>
 </body>
