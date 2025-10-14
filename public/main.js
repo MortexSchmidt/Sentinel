@@ -354,6 +354,8 @@
 
     loadUserData();
     renderPlans();
+    // Also initialize store functionality (bind buttons)
+    try { initStore(); } catch (e) { console.error('[store] failed to initStore()', e); }
 
     console.log('[store] store interface initialized');
   }
@@ -497,8 +499,7 @@
       });
     }
 
-    // Initialize store functionality
-    initStore();
+  // Initialize store functionality
   }
 
   function renderPlans() {
