@@ -19,11 +19,35 @@
     const pendingCode = localStorage.getItem('pendingAuthCode');
     if (pendingCode && !pageChatId) {
       console.log('[auth] found pending auth code:', pendingCode);
-      // Here you would typically verify the code with your backend
-      // For now, we'll just clear it and show a message
-      localStorage.removeItem('pendingAuthCode');
-      alert('Код авторизации использован! Теперь вы можете войти в магазин.');
-      return;
+      console.log('[auth] verifying code with server...');
+
+      try {
+        const response = await fetch('/auth/verify', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({code: pendingCode})
+        });
+
+        const data = await response.json();
+        console.log('[auth] verification response:', data);
+
+        if (data.ok && data.chat_id) {
+          console.log('[auth] code verified, redirecting with chat_id:', data.chat_id);
+          localStorage.removeItem('pendingAuthCode');
+          // Redirect with verified chat_id
+          window.location.href = '/main.html?chat_id=' + data.chat_id;
+          return;
+        } else {
+          console.log('[auth] code verification failed or expired');
+          localStorage.removeItem('pendingAuthCode');
+          alert('Код авторизации истек или неверный. Пожалуйста, сгенерируйте новый код.');
+          return;
+        }
+      } catch (error) {
+        console.error('[auth] error verifying code:', error);
+        localStorage.removeItem('pendingAuthCode');
+        return;
+      }
     }
 
     const chatId = pageChatId || ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
@@ -98,6 +122,7 @@
         // Generate random 6-digit code
         const authCode = generateAuthCode();
         console.log('[auth] generated code:', authCode);
+        console.log('[auth] saving to localStorage...');
 
         // Display the code
         if (authCodeElement) {
@@ -116,7 +141,10 @@
         // Save code for later verification
         localStorage.setItem('pendingAuthCode', authCode);
 
-        console.log('[auth] code displayed, waiting for bot verification');
+        // Send code to server for registration
+        registerAuthCode(authCode);
+
+        console.log('[auth] code displayed and registered, waiting for bot verification');
       });
     }
 
@@ -150,6 +178,27 @@
     const min = 100000;
     const max = 999999;
     return Math.floor(Math.random() * (max - min + 1) + min).toString();
+  }
+
+  // Register auth code on server
+  async function registerAuthCode(code) {
+    try {
+      console.log('[auth] registering code on server:', code);
+      const response = await fetch('/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({code: code})
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        console.log('[auth] code registered successfully');
+      } else {
+        console.error('[auth] failed to register code:', data.error);
+      }
+    } catch (error) {
+      console.error('[auth] error registering code:', error);
+    }
   }
 
   // Initialize store interface for main.html
