@@ -38,11 +38,22 @@
   const PLANS = [{days:7,label:'7 дней',price:179},{days:30,label:'30 дней',price:358},{days:0,label:'Навсегда',price:4491}];
 
   giftBtn.addEventListener('click', ()=>{
+    console.log('[gift] open gift area');
     // animate main content out
-    document.querySelector('.screen').style.transition = 'opacity .36s ease, transform .36s ease';
-    document.querySelector('.screen').style.opacity = '0';
-    document.querySelector('.screen').style.transform = 'translateY(-12px)';
-    setTimeout(()=>{ document.querySelector('.screen').classList.add('hidden'); giftArea.classList.remove('hidden'); giftArea.style.opacity='0'; giftArea.style.transform='scale(.98)'; setTimeout(()=>{ giftArea.style.transition='opacity .36s ease, transform .36s ease'; giftArea.style.opacity='1'; giftArea.style.transform='scale(1)'; },10); },380);
+    const screen = document.querySelector('.screen');
+    if (screen) {
+      screen.style.transition = 'opacity .36s ease, transform .36s ease';
+      screen.style.opacity = '0';
+      screen.style.transform = 'translateY(-12px)';
+    }
+    setTimeout(()=>{
+      if (screen) screen.classList.add('hidden');
+      giftArea.classList.remove('hidden');
+      // ensure visible even in strict WebViews
+      giftArea.style.opacity='0'; giftArea.style.transform='scale(.98)';
+      giftArea.style.display = 'flex';
+      setTimeout(()=>{ giftArea.style.transition='opacity .36s ease, transform .36s ease'; giftArea.style.opacity='1'; giftArea.style.transform='scale(1)'; },10);
+    },380);
   });
 
   giftNick.addEventListener('keydown', async (e)=>{ if (e.key==='Enter'){
@@ -51,6 +62,7 @@
     const from = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user : { id: 'demo', first_name: 'Вы', username: '' };
     document.getElementById('giftFromName').textContent = from.first_name || from.username || 'Вы';
     document.getElementById('giftToName').textContent = to;
+    console.log('[gift] recipient entered:', to);
     giftSteps.classList.remove('hidden');
     // populate plans as small tiles
     giftPlans.innerHTML = '';
