@@ -90,6 +90,7 @@
     const storeUsername = document.getElementById('storeUsername');
     const storeStatus = document.getElementById('planStatus');
     const storeAvatar = document.getElementById('storeAvatar');
+    const previewChat = document.getElementById('previewChatId');
 
     if (storeName) storeName.textContent = user.first_name || user.username || 'Пользователь';
     if (storeUsername) storeUsername.textContent = user.username ? '@' + user.username : '';
@@ -102,6 +103,11 @@
 
     const status = data.active ? (data.daysRemaining ? data.daysRemaining + ' дней' : 'Навсегда') : 'Нет подписки';
     if (storeStatus) storeStatus.textContent = status;
+    // also fill preview chat id if present (webapp.html preview)
+    if (previewChat && user && user.chat_id) previewChat.textContent = user.chat_id;
+    // also fill any preview element id in webapp (fallback)
+    const previewEl = document.getElementById('previewChatId');
+    if (previewEl && user && user.chat_id) previewEl.textContent = user.chat_id;
   }
 
   // Initialize interfaces based on current page
