@@ -211,19 +211,34 @@
   function startAuthStatusCheck() {
     console.log('[auth] starting status check...');
 
-    const checkInterval = setInterval(() => {
+    const checkInterval = setInterval(async () => {
       const pendingCode = localStorage.getItem('pendingAuthCode');
       if (pendingCode) {
-        verifyAuthCode(pendingCode).then(result => {
-          if (result.chat_id) {
-            console.log('[auth] auth successful, stopping checks');
+        console.log('[auth] checking code:', pendingCode);
+
+        try {
+          const response = await fetch('/auth/verify', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({code: pendingCode})
+          });
+
+          const data = await response.json();
+          console.log('[auth] verification response:', data);
+
+          if (data.ok && data.chat_id) {
+            console.log('[auth] auth successful, stopping checks and redirecting');
             clearInterval(checkInterval);
-            showAuthSuccess(result.chat_id);
+            localStorage.removeItem('pendingAuthCode');
+            window.location.href = '/main.html?chat_id=' + data.chat_id;
+          } else {
+            console.log('[auth] code not verified yet, continuing checks...');
           }
-        }).catch(error => {
-          // Continue checking
-        });
+        } catch (error) {
+          console.error('[auth] error during verification check:', error);
+        }
       } else {
+        console.log('[auth] no pending code found, stopping checks');
         clearInterval(checkInterval);
       }
     }, 2000); // Check every 2 seconds
@@ -259,8 +274,52 @@
       });
     }
 
+    // Add click handler for manual refresh button
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        console.log('[auth] manual status refresh...');
+        checkAuthStatus();
+      });
+    }
+
     // Clear pending code
     localStorage.removeItem('pendingAuthCode');
+  }
+
+  // Manual auth status check function
+  async function checkAuthStatus() {
+    const pendingCode = localStorage.getItem('pendingAuthCode');
+    if (pendingCode) {
+      console.log('[auth] manual check - checking code:', pendingCode);
+
+      try {
+        const response = await fetch('/auth/verify', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({code: pendingCode})
+        });
+
+        const data = await response.json();
+        console.log('[auth] manual check response:', data);
+
+        if (data.ok && data.chat_id) {
+          console.log('[auth] manual check - auth successful');
+          localStorage.removeItem('pendingAuthCode');
+          showAuthSuccess(data.chat_id);
+          return true;
+        } else {
+          console.log('[auth] manual check - code not verified yet');
+          return false;
+        }
+      } catch (error) {
+        console.error('[auth] error during manual check:', error);
+        return false;
+      }
+    } else {
+      console.log('[auth] manual check - no pending code');
+      return false;
+    }
   }
 
   // Initialize store interface for main.html
