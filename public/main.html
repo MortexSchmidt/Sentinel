@@ -3,353 +3,88 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sentinel — Главная</title>
+  <title>Sentinel Lua — Магазин подписок</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="app-container">
+  <div class="webapp-container">
     <!-- Header -->
-    <div class="app-header">
-      <div class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="logo-icon">
-          <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="#4F9CF9" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M12 7L7 10V14L12 17L17 14V10L12 7Z" stroke="#4F9CF9" stroke-width="1" stroke-linejoin="round"/>
-        </svg>
-        <span class="logo-text">Sentinel</span>
-      </div>
-      <div class="user-info">
-        <span class="user-name">User: Mortexegg</span>
-        <span class="expires-text">Expires: 20.10.25</span>
-      </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <nav class="nav-menu">
-        <div class="nav-item active" data-tab="store">
-          <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M3 3H5L5.4 7M7 13H17L21 3H5.4M7 13L5.4 7M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H18.9C19.4 16.5 19.7 15.7 19.3 15.3L17 13H7ZM9 19C9.6 19 10 19.4 10 20S9.6 21 9 21 8 20.6 8 20 8.4 19 9 19ZM20 19C20.6 19 21 19.4 21 20S20.6 21 20 21 19 20.6 19 20 19.4 19 20 19Z" stroke="#4F9CF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Магазин</span>
-        </div>
-        <div class="nav-item" data-tab="main">
-          <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="18" height="18" rx="2" stroke="#4F9CF9" stroke-width="2"/>
-            <path d="M9 9L15 15M15 9L9 15" stroke="#4F9CF9" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Main</span>
-        </div>
-        <div class="nav-item" data-tab="visuals">
-          <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="#4F9CF9" stroke-width="2"/>
-            <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M6.34 17.66L4.93 19.07M19.07 4.93L17.66 6.34" stroke="#4F9CF9" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Visuals</span>
-        </div>
-        <div class="nav-item" data-tab="misc">
-          <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="#4F9CF9" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M8 12L12 16L16 12" stroke="#4F9CF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Misc</span>
-        </div>
-        <div class="nav-item" data-tab="configs">
-          <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="#4F9CF9" stroke-width="2"/>
-            <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.5 16.5843 19.734 16.824C19.968 17.0637 20.271 17.2338 20.608 17.316C20.945 17.3982 21.302 17.3895 21.64 17.29L21.64 17.29C21.84 17.21 22 17.01 22 16.8V7.2C22 6.99 21.84 6.79 21.64 6.71L12 2L2.36 6.71C2.16 6.79 2 6.99 2 7.2V16.8C2 17.01 2.16 17.21 2.36 17.29L12 22L21.64 17.29C21.84 17.21 22 17.01 22 16.8V15.4C21.7338 15.4 21.48 15.3 21.286 15.12C21.092 14.94 20.968 14.688 20.936 14.4L19.4 15Z" stroke="#4F9CF9" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-          <span>Configs</span>
-        </div>
-      </nav>
+    <div class="webapp-header">
+      <h1 class="webapp-title">Sentinel Lua</h1>
+      <div class="webapp-subtitle">Магазин подписок</div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-      <!-- General Tab -->
-      <div class="tab-content active" data-tab="general">
-        <div class="content-section">
-          <h2>General</h2>
-          <div class="settings-grid">
-            <div class="setting-item">
-              <label>Menu color</label>
-              <input type="color" value="#4F9CF9" class="color-picker">
+    <div class="webapp-content">
+      <!-- User Info Section -->
+      <div class="store-user-info">
+        <div class="user-profile">
+          <div class="avatar-wrapper">
+            <img id="storeAvatar" class="store-avatar hidden" src="" alt="avatar">
+            <div class="avatar-placeholder"></div>
+          </div>
+          <div class="user-details">
+            <div id="storeName" class="store-name">Гость</div>
+            <div id="storeUsername" class="store-username">@guest</div>
+            <div id="storeStatus" class="store-status">Статус: <span id="planStatus">Нет подписки</span></div>
+          </div>
+        </div>
+        <button id="authBtn" class="btn-primary auth-btn">Войти через Telegram</button>
+      </div>
+
+      <!-- Subscription Plans -->
+      <div class="subscription-section">
+        <h3>Доступные тарифы</h3>
+        <div id="plansGrid" class="plans-grid">
+          <!-- Plans will be loaded here -->
+        </div>
+        <div class="purchase-section">
+          <button id="buyBtn" class="btn-primary buy-btn" disabled>Купить выбранный тариф</button>
+        </div>
+      </div>
+
+      <!-- Gift Section (initially hidden) -->
+      <div id="giftSection" class="gift-section hidden">
+        <h3>Подарить подписку</h3>
+        <div class="gift-form">
+          <div class="form-group">
+            <label>Кому подарить:</label>
+            <input id="giftUsername" class="text-input" placeholder="Введите @username или chat_id" />
+          </div>
+
+          <div id="giftPreview" class="gift-preview hidden">
+            <div class="gift-info">
+              <div class="gift-card-preview">
+                <div class="gift-from">
+                  <span class="gift-label">От:</span>
+                  <div class="gift-avatar-small" id="giftFromAvatarSmall"></div>
+                  <span id="giftFromNameSmall">Вы</span>
+                </div>
+                <div class="gift-to">
+                  <span class="gift-label">Кому:</span>
+                  <div class="gift-avatar-small" id="giftToAvatarSmall"></div>
+                  <span id="giftToNameSmall">Получатель</span>
+                </div>
+              </div>
             </div>
-            <div class="setting-item">
-              <label>
-                <input type="checkbox" checked> Switch menu key
-              </label>
+
+            <div id="giftPlansGrid" class="gift-plans-grid">
+              <!-- Gift plans will be loaded here -->
+            </div>
+
+            <div class="gift-actions">
+              <button id="sendGiftBtn" class="btn-primary">Отправить подарок</button>
+              <button id="cancelGiftBtn" class="btn-secondary">Отмена</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Main Tab -->
-      <div class="tab-content" data-tab="main">
-        <div class="content-section">
-          <h2>Main</h2>
-          <div class="settings-columns">
-            <div class="settings-column">
-              <div class="setting-item">
-                <label>Edge jump</label>
-                <select class="dropdown">
-                  <option>none</option>
-                  <option>normal</option>
-                  <option>fast</option>
-                </select>
-              </div>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox"> Duck peek assist
-                </label>
-              </div>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox"> Auto peek assistant
-                </label>
-              </div>
-            </div>
-            <div class="settings-column">
-              <div class="setting-item">
-                <label>Override minimal damage</label>
-                <input type="range" min="0" max="100" value="45" class="slider">
-                <span class="slider-value">45</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="store-actions">
+        <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
       </div>
 
-      <!-- Visuals Tab -->
-      <div class="tab-content" data-tab="visuals">
-        <div class="content-section">
-          <div class="tabs-sub">
-            <div class="sub-tab active" data-subtab="general">General</div>
-            <div class="sub-tab" data-subtab="world">World</div>
-            <div class="sub-tab" data-subtab="local">Local player</div>
-            <div class="sub-tab" data-subtab="extra">Extra</div>
-            <div class="sub-tab" data-subtab="charms">Charms</div>
-          </div>
-
-          <div class="sub-content active" data-subtab="general">
-            <h2>Visuals</h2>
-            <div class="settings-columns">
-              <div class="settings-column">
-                <div class="setting-item">
-                  <label>Thirdperson distance</label>
-                  <input type="range" min="0" max="300" value="120" class="slider">
-                  <span class="slider-value">120</span>
-                </div>
-                <div class="setting-item">
-                  <label>Override FOV</label>
-                  <input type="range" min="60" max="140" value="90" class="slider">
-                  <span class="slider-value">90</span>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Override scope overlay
-                  </label>
-                </div>
-              </div>
-              <div class="settings-column">
-                <div class="setting-item">
-                  <label>Popups</label>
-                  <select class="dropdown">
-                    <option>select</option>
-                    <option>option 1</option>
-                    <option>option 2</option>
-                  </select>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Local bullet tracers
-                  </label>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Sparks on Impact
-                  </label>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Bullet impacts
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Misc Tab -->
-      <div class="tab-content" data-tab="misc">
-        <div class="content-section">
-          <div class="tabs-sub">
-            <div class="sub-tab active" data-subtab="general">General</div>
-            <div class="sub-tab" data-subtab="socials">Socials</div>
-            <div class="sub-tab" data-subtab="shared">Shared features</div>
-          </div>
-
-          <div class="sub-content active" data-subtab="general">
-            <h2>Misc</h2>
-            <div class="settings-columns">
-              <div class="settings-column">
-                <div class="setting-item">
-                  <label>Menu color</label>
-                  <input type="color" value="#4F9CF9" class="color-picker">
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox" checked> Switch menu key
-                  </label>
-                </div>
-              </div>
-              <div class="settings-column">
-                <div class="setting-item">
-                  <label>Agent changer</label>
-                  <select class="dropdown">
-                    <option>Custom</option>
-                    <option>Default</option>
-                  </select>
-                </div>
-                <div class="setting-item">
-                  <label>Path to model</label>
-                  <input type="text" class="text-input" placeholder="Enter path...">
-                </div>
-                <div class="setting-item">
-                  <button class="btn-secondary">Save custom model path</button>
-                </div>
-                <div class="setting-item">
-                  <label>DPI scale</label>
-                  <select class="dropdown">
-                    <option>100%</option>
-                    <option>125%</option>
-                    <option>150%</option>
-                  </select>
-                </div>
-                <div class="setting-item">
-                  <label>Event logs</label>
-                  <select class="dropdown">
-                    <option>select</option>
-                    <option>option 1</option>
-                  </select>
-                </div>
-                <div class="setting-item">
-                  <label>Windows</label>
-                  <select class="dropdown">
-                    <option>select</option>
-                    <option>Window 1</option>
-                  </select>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Trashtalk
-                  </label>
-                </div>
-                <div class="setting-item">
-                  <label>
-                    <input type="checkbox"> Enable logging every action (FPS)
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Store Tab -->
-      <div class="tab-content active" data-tab="store">
-        <div class="content-section">
-          <h2>Магазин подписок</h2>
-
-          <!-- User Info Section -->
-          <div class="store-user-info">
-            <div class="user-profile">
-              <div class="avatar-wrapper">
-                <img id="storeAvatar" class="store-avatar hidden" src="" alt="avatar">
-                <div class="avatar-placeholder"></div>
-              </div>
-              <div class="user-details">
-                <div id="storeName" class="store-name">Гость</div>
-                <div id="storeUsername" class="store-username">@guest</div>
-                <div id="storeStatus" class="store-status">Статус: <span id="planStatus">Нет подписки</span></div>
-              </div>
-            </div>
-            <button id="authBtn" class="btn-primary auth-btn">Войти через Telegram</button>
-          </div>
-
-          <!-- Subscription Plans -->
-          <div class="subscription-section">
-            <h3>Доступные тарифы</h3>
-            <div id="plansGrid" class="plans-grid">
-              <!-- Plans will be loaded here -->
-            </div>
-            <div class="purchase-section">
-              <button id="buyBtn" class="btn-primary buy-btn" disabled>Купить выбранный тариф</button>
-            </div>
-          </div>
-
-          <!-- Gift Section (initially hidden) -->
-          <div id="giftSection" class="gift-section hidden">
-            <h3>Подарить подписку</h3>
-            <div class="gift-form">
-              <div class="form-group">
-                <label>Кому подарить:</label>
-                <input id="giftUsername" class="text-input" placeholder="Введите @username или chat_id" />
-              </div>
-
-              <div id="giftPreview" class="gift-preview hidden">
-                <div class="gift-info">
-                  <div class="gift-card-preview">
-                    <div class="gift-from">
-                      <span class="gift-label">От:</span>
-                      <div class="gift-avatar-small" id="giftFromAvatarSmall"></div>
-                      <span id="giftFromNameSmall">Вы</span>
-                    </div>
-                    <div class="gift-to">
-                      <span class="gift-label">Кому:</span>
-                      <div class="gift-avatar-small" id="giftToAvatarSmall"></div>
-                      <span id="giftToNameSmall">Получатель</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div id="giftPlansGrid" class="gift-plans-grid">
-                  <!-- Gift plans will be loaded here -->
-                </div>
-
-                <div class="gift-actions">
-                  <button id="sendGiftBtn" class="btn-primary">Отправить подарок</button>
-                  <button id="cancelGiftBtn" class="btn-secondary">Отмена</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="store-actions">
-            <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
-          </div>
-
-          <p class="store-note">Выберите тариф и способ оплаты для оформления подписки</p>
-        </div>
-      </div>
-
-      <!-- General Tab -->
-      <div class="tab-content" data-tab="general">
-        <div class="content-section">
-          <h2>General</h2>
-          <div class="settings-grid">
-            <div class="setting-item">
-              <label>Menu color</label>
-              <input type="color" value="#4F9CF9" class="color-picker">
-            </div>
-            <div class="setting-item">
-              <label>
-                <input type="checkbox" checked> Switch menu key
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p class="store-note">Выберите тариф и нажмите Купить для оформления подписки</p>
     </div>
   </div>
 
