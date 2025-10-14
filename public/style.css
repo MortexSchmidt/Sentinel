@@ -102,13 +102,15 @@ h1{margin:0 0 6px;font-size:22px}
 
 /* make hidden really non-interactive */
 .hidden{display:none !important; pointer-events:none}
-.gift-area{position:relative; z-index:9999; display:flex; justify-content:center; padding:18px}
-.gift-inner{background:linear-gradient(180deg,#0b1220,#071018);padding:16px;border-radius:12px;max-width:520px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,0.4)}
-.gift-area input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef8;margin:8px 0}
+.gift-area{position:relative; z-index:9999; display:none; justify-content:center; align-items:flex-start; padding:18px; min-height:100%; box-sizing:border-box}
+.gift-area.hidden{display:none !important}
+.gift-inner{background:linear-gradient(180deg,#0b1220,#071018);padding:16px;border-radius:12px;max-width:520px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,0.4); margin-top:20px}
+.gift-area input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef8;margin:8px 0; font-size:14px}
+.gift-area input:focus{border-color:var(--accent); outline:none}
 .gift-steps{margin-top:12px}
-.gift-plans{display:flex;gap:8px;flex-wrap:wrap}
-.gift-card{display:flex;gap:12px;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
-.gift-avatar{width:40px;height:40px;border-radius:8px;background:linear-gradient(180deg,#0a1220,#0f1722)}
+.gift-plans{display:flex;gap:8px;flex-wrap:wrap; justify-content:center}
+.gift-card{display:flex;gap:12px;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px; margin-bottom:12px}
+.gift-avatar{width:40px;height:40px;border-radius:8px;background:linear-gradient(180deg,#0a1220,#0f1722); object-fit:cover}
 .success-card{background:#07101a;padding:18px;border-radius:12px;width:90%;max-width:420px;color:#e6eef8;transform:scale(.92);opacity:0;transition:transform .28s ease,opacity .28s ease}
 .success-card.show{transform:scale(1);opacity:1}
 

@@ -42,18 +42,23 @@
     // animate main content out
     const screen = document.querySelector('.screen');
     if (screen) {
-      screen.style.transition = 'opacity .36s ease, transform .36s ease';
+      screen.style.transition = 'opacity .3s ease, transform .3s ease';
       screen.style.opacity = '0';
-      screen.style.transform = 'translateY(-12px)';
+      screen.style.transform = 'translateY(-10px)';
     }
     setTimeout(()=>{
       if (screen) screen.classList.add('hidden');
       giftArea.classList.remove('hidden');
       // ensure visible even in strict WebViews
-      giftArea.style.opacity='0'; giftArea.style.transform='scale(.98)';
-      giftArea.style.display = 'flex';
-      setTimeout(()=>{ giftArea.style.transition='opacity .36s ease, transform .36s ease'; giftArea.style.opacity='1'; giftArea.style.transform='scale(1)'; },10);
-    },380);
+      giftArea.style.display = 'block';
+      giftArea.style.opacity = '0';
+      giftArea.style.transform = 'translateY(20px) scale(0.95)';
+      giftArea.style.transition = 'opacity .3s ease, transform .3s ease';
+      // Force reflow
+      giftArea.offsetHeight;
+      giftArea.style.opacity = '1';
+      giftArea.style.transform = 'translateY(0) scale(1)';
+    }, 320);
   });
 
   giftNick.addEventListener('keydown', async (e)=>{ if (e.key==='Enter'){
@@ -73,7 +78,28 @@
     });
   }});
 
-  cancelGift.addEventListener('click', ()=>{ giftArea.classList.add('hidden'); document.querySelector('.screen').classList.remove('hidden'); setTimeout(()=>{ document.querySelector('.screen').style.opacity='1'; document.querySelector('.screen').style.transform='translateY(0)'; },20); });
+  cancelGift.addEventListener('click', ()=>{
+    console.log('[gift] cancel gift area');
+    // animate gift area out
+    giftArea.style.transition = 'opacity .3s ease, transform .3s ease';
+    giftArea.style.opacity = '0';
+    giftArea.style.transform = 'translateY(-10px) scale(0.98)';
+
+    setTimeout(()=>{
+      giftArea.classList.add('hidden');
+      const screen = document.querySelector('.screen');
+      if (screen) {
+        screen.classList.remove('hidden');
+        screen.style.transition = 'opacity .3s ease, transform .3s ease';
+        screen.style.opacity = '0';
+        screen.style.transform = 'translateY(10px)';
+        // Force reflow
+        screen.offsetHeight;
+        screen.style.opacity = '1';
+        screen.style.transform = 'translateY(0)';
+      }
+    }, 280);
+  });
 
   sendGift.addEventListener('click', async ()=>{
     const sel = document.querySelector('#giftPlans .plan.selected'); if (!sel){ alert('Выберите тариф'); return; }
