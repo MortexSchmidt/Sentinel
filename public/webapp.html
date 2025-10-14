@@ -47,31 +47,25 @@
         <div id="modalPlan" class="modal-plan"></div>
         <div class="pay-methods">
           <label class="pm"><input type="radio" name="pm" value="card" checked> Карта</label>
-          <label class="pm"><input type="radio" name="pm" value="qiwi"> QIWI</label>
-          <label class="pm"><input type="radio" name="pm" value="yoomoney"> YooMoney</label>
-        </div>
-        <div class="modal-actions">
-          <button id="confirmPay" class="primary">Оплатить (демо)</button>
-          <button id="cancelPay" class="ghost">Отмена</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success modal -->
-    <div id="successModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Покупка завершена</h3>
-        <div id="successInfo"></div>
-        <div class="modal-actions">
-          <button id="closeSuccess" class="primary">Закрыть</button>
+      <!-- Providers area (hidden until Buy pressed) -->
+      <div id="providersArea" class="providers-area hidden">
+        <div class="providers-inner">
+          <h3>Выберите провайдера оплаты</h3>
+          <div id="providers" class="providers-list"></div>
+          <div class="modal-actions">
+            <button id="providersBack" class="ghost">Назад</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <audio id="sndClick" src="/sounds/click.mp3" preload="auto"></audio>
-  <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
-
-  <script src="/app.js"></script>
-</body>
+      <!-- Success overlay -->
+      <div id="successOverlay" class="success-overlay hidden">
+        <div class="success-card">
+          <h3>Покупка завершена</h3>
+          <div id="successInfo"></div>
+          <div class="modal-actions">
+            <button id="closeSuccess" class="primary">Закрыть</button>
+          </div>
+        </div>
+      </div>
 </html>
