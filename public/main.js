@@ -85,6 +85,20 @@
     }
   }
 
+  // Helper: форматирует дату окончания подписки по количеству оставшихся дней
+  function calculateExpiryDate(days) {
+    try {
+      const d = new Date();
+      d.setDate(d.getDate() + Number(days));
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      return `${dd}.${mm}.${yyyy}`;
+    } catch (e) {
+      return '-';
+    }
+  }
+
   function updateUserInterface(user, data) {
     const storeName = document.getElementById('storeName');
     const storeUsername = document.getElementById('storeUsername');
@@ -103,6 +117,19 @@
 
     const status = data.active ? (data.daysRemaining ? data.daysRemaining + ' дней' : 'Навсегда') : 'Нет подписки';
     if (storeStatus) storeStatus.textContent = status;
+
+    // header meta (top-right) — обновляем только если элемент присутствует
+    const headerUserEl = document.getElementById('headerUser');
+    const headerExpiryEl = document.getElementById('headerExpiry');
+    if (headerUserEl) headerUserEl.textContent = user.username || user.first_name || 'Гость';
+    if (headerExpiryEl) {
+      if (data && data.active) {
+        if (data.daysRemaining && !isNaN(Number(data.daysRemaining))) headerExpiryEl.textContent = calculateExpiryDate(Number(data.daysRemaining));
+        else headerExpiryEl.textContent = 'Навсегда';
+      } else {
+        headerExpiryEl.textContent = 'Нет подписки';
+      }
+    }
     // also fill preview chat id if present (webapp.html preview)
     if (previewChat && user && user.chat_id) previewChat.textContent = user.chat_id;
     // also fill any preview element id in webapp (fallback)
@@ -663,6 +690,14 @@
   function init() {
     console.log('[app] DOM ready, initializing...');
     initInterface();
+    // Sidebar visual: переключатель активной кнопки (чисто визуально)
+    try {
+      const sidebarBtns = Array.from(document.querySelectorAll('.sidebar-btn'));
+      sidebarBtns.forEach(btn => btn.addEventListener('click', () => {
+        sidebarBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }));
+    } catch (e) { /* no-op if sidebar not present */ }
     console.log('[app] initialization complete');
   }
 

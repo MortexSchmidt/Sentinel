@@ -5,17 +5,49 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sentinel Lua — Купить лицензию</title>
   <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="webapp-container">
-    <!-- Header -->
-    <div class="webapp-header">
-      <h1 class="webapp-title">Sentinel Lua</h1>
-      <div class="webapp-subtitle">Купить лицензию</div>
-    </div>
+    <div class="app-shell">
+      <aside class="app-sidebar" aria-label="Навигация">
+        <div class="app-logo" title="Sentinel">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2L15.5 8.5L22 12L15.5 15.5L12 22L8.5 15.5L2 12L8.5 8.5L12 2Z" fill="#0ea5e9" opacity="0.06"/>
+            <path d="M12 4.5L14.8 9.2L19.5 11.7L14.8 14.2L12 18.9L9.2 14.2L4.5 11.7L9.2 9.2L12 4.5Z" fill="#60a5fa"/>
+          </svg>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="sidebar-btn active" title="Store" aria-label="Store">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 7h18v13H3z" stroke="#9aa4b2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M16 7V5a4 4 0 10-8 0v2" stroke="#9aa4b2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="sidebar-btn" title="Visuals" aria-label="Visuals">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 21l3-3 7-7 4 4-7 7-3 3H3z" stroke="#9aa4b2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <button class="sidebar-btn" title="Anti-Aim" aria-label="Anti-Aim">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2l7 4v6c0 5-3.5 9.7-7 10-3.5-.3-7-5-7-10V6l7-4z" stroke="#9aa4b2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <button class="sidebar-btn" title="Ragebot" aria-label="Ragebot">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="#9aa4b2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <button class="sidebar-btn" title="Configs" aria-label="Configs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z" stroke="#9aa4b2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09c.67 0 1.24-.4 1.51-1a1.65 1.65 0 00-.33-1.82L3.3 4.7A2 2 0 016.1 1.87l.06.06A1.65 1.65 0 008 2.26c.67 0 1.24.4 1.51 1a1.65 1.65 0 001.82.33H12a1.65 1.65 0 001.51-1c.27-.6.84-1 1.51-1H18a2 2 0 010 4h-.09c-.67 0-1.24.4-1.51 1a1.65 1.65 0 00.33 1.82L19.4 8a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-1.82.33c-.27.6-.84 1-1.51 1H15a1.65 1.65 0 00-1.51 1c-.27.6-.84 1-1.51 1H9a2 2 0 010 4h.09c.67 0 1.24.4 1.51 1z" stroke="#9aa4b2" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+        </nav>
+      </aside>
 
-    <!-- Main Content -->
-    <div class="webapp-content">
+      <div class="webapp-main">
+        <div class="app-topbar">
+          <div class="topbar-left">
+            <h1 class="webapp-title">Sentinel Lua</h1>
+            <div class="webapp-subtitle">Купить лицензию</div>
+          </div>
+          <div class="topbar-right">
+            <div id="headerUserMeta" class="header-user-meta">User: <span id="headerUser">Гость</span> <span class="dot">•</span> Expires: <span id="headerExpiry">-</span></div>
+          </div>
+        </div>
+
+        <div class="webapp-content">
       <div id="loginScreen" class="auth-screen">
         <div class="auth-card">
           <div class="auth-header">
@@ -114,11 +146,14 @@
     </div>
   </div> <!-- .card -->
 
+        </div> <!-- .webapp-content -->
+      </div> <!-- .webapp-main -->
+    </div> <!-- .app-shell -->
+  </div> <!-- .webapp-container -->
+
   <audio id="sndClick" src="/sounds/click.mp3" preload="auto"></audio>
   <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
 
-     <script src="/main.js"></script>
-   </div>
- </div>
+  <script src="/main.js"></script>
 </body>
 </html>
