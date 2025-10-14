@@ -1,15 +1,13 @@
 .root{box-sizing:border-box}
 *{box-sizing:border-box}
 :root{--bg:#0a0a0a;--card:#1a1a1a;--muted:#b0b0b0;--accent:#1565d8;--accent-contrast:#ffffff}
-body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#0b1b2b; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
 h1{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
-.card{width:100%;max-width:520px;background:var(--card);padding:26px;border-radius:12px;box-shadow:0 8px 30px rgba(9,30,66,0.08); transition:transform .26s ease}
-.card:hover{transform:translateY(-4px)}
+.card{width:100%;max-width:520px;background:var(--card);padding:26px;border-radius:12px;box-shadow:0 8px 30px rgba(9,30,66,0.08)}
 h1{margin:0 0 6px;font-size:22px}
 .subtitle{margin:0 0 18px;color:var(--muted)}
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
-.plan{background:#f7fbff;padding:12px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:transform .18s ease,box-shadow .18s ease}
-.plan:hover{transform:translateY(-6px);box-shadow:0 10px 24px rgba(21,101,216,0.08)}
+.plan{background:#f7fbff;padding:12px;border-radius:10px;cursor:pointer;border:1px solid transparent}
 .plan.selected{border-color:var(--accent);box-shadow:0 8px 28px rgba(21,101,216,0.12)}
 .plan h3{margin:0;font-size:15px}
 .plan p{margin:6px 0 0;color:var(--muted);font-size:13px}
@@ -28,10 +26,10 @@ h1{margin:0 0 6px;font-size:22px}
 .status{margin:10px 0;font-size:14px}
 
 /* auth code styles */
-.auth-code{background:var(--card);padding:16px;border-radius:10px;margin-top:12px;text-align:center}
-.auth-code h2{margin:0 0 8px;font-size:18px}
-.auth-code p{margin:6px 0}
-.auth-code code{background:#333;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:16px}
+.auth-code{background:var(--card);padding:16px;border-radius:10px;margin-top:12px;text-align:center;color:#ffffff}
+.auth-code h2{margin:0 0 8px;font-size:18px;color:#ffffff}
+.auth-code p{margin:6px 0;color:#ffffff}
+.auth-code code{background:#333;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:16px;color:#ffffff}
 .timer{font-size:20px;font-weight:700;color:var(--accent);margin:12px 0}
 .retry-btn{background:var(--accent);color:var(--accent-contrast);border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;margin-top:12px}
 .retry-btn:hover{background:#0e4ba8}

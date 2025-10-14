@@ -81,7 +81,7 @@ function render() {
     promptEl.className = 'auth-code';
     promptEl.innerHTML = `<h2>Код авторизации</h2><p>Введите команду в боте: <code>/auth ${code}</code></p><p>После ввода кода в боте подождите — страница автоматически обновится.</p><div class="timer">05:00</div>`;
     loginScreen.appendChild(promptEl);
-    playClick();
+    // playClick();
 
     // make code clickable to copy
     const codeEl = promptEl.querySelector('code');
