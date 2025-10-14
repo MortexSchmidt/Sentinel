@@ -28,8 +28,8 @@ h1{margin:0 0 6px;font-size:22px}
 .ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:10px 12px;border-radius:8px;color:#e6eef8}
 
 /* avatar */
-.avatar-wrap{width:72px;height:72px;border-radius:12px;background:linear-gradient(180deg,#0a1220,#0f1722);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.avatar{width:68px;height:68px;border-radius:10px}
+.avatar-wrap{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#0a1220,#0f1722);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;display:block}
 .actions{display:flex;gap:10px}
 .primary{flex:1;padding:12px;border-radius:10px;background:var(--accent);border:none;color:var(--accent-contrast);font-weight:700;cursor:pointer}
 .primary:disabled{opacity:0.55;cursor:not-allowed}
@@ -38,7 +38,7 @@ h1{margin:0 0 6px;font-size:22px}
 .hidden{display:none}
 .logo{width:96px;height:96px;object-fit:contain;margin-bottom:12px}
 .profile{display:flex;gap:14px;align-items:center;margin-bottom:14px}
-.avatar{width:72px;height:72px;border-radius:12px;object-fit:cover}
+.avatar{width:52px;height:52px;border-radius:50%;object-fit:cover}
 .meta{display:flex;flex-direction:column}
 .name{font-weight:700;font-size:16px}
 .username{color:var(--muted);font-size:13px}
