@@ -130,7 +130,7 @@
             // Visual feedback
             authCodeElement.style.background = 'rgba(79, 156, 249, 0.1)';
             authCodeElement.style.borderColor = 'var(--accent-primary)';
-            authCodeElement.textContent = 'СКОПИРОВАНО!';
+            authCodeElement.textContent = 'КОПИРОВАНО';
 
             setTimeout(() => {
               authCodeElement.style.background = 'var(--bg-card)';
