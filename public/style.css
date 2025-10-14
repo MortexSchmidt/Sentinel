@@ -76,6 +76,11 @@ h1{margin:0 0 6px;font-size:22px}
 .plan:hover{transform:translateY(-6px) scale(1.02)}
 .plan.collapse{transform:translate(-50%, -50%) scale(.08) !important; opacity:0; position:relative; z-index:80}
 
+/* blur contents on hover (desktop) */
+.plan .plan-inner{transition:filter .32s ease, opacity .28s ease}
+.plan:hover .plan-inner{filter:blur(5px);opacity:.7}
+.plan .plan-inner.touched{filter:blur(5px);opacity:.7}
+
 /* helper overlay to center collapse (invisible) */
 .plans.centering{position:relative}
 

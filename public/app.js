@@ -101,8 +101,14 @@ function render() {
   plans.forEach(p => {
     const el = document.createElement('div');
     el.className = 'plan' + (selected && selected.days === p.days ? ' selected' : '');
-    el.innerHTML = `<h3>${p.label}</h3><p>${p.price} рублей — Лицензия</p>`;
+    el.innerHTML = `<div class="plan-inner"><h3>${p.label}</h3><p>${p.price} рублей — Лицензия</p></div>`;
     el.onclick = () => { selected = p; render(); buyBtn.disabled = false; };
+    // touch support: briefly blur on touchstart
+    el.addEventListener('touchstart', () => {
+      const inner = el.querySelector('.plan-inner');
+      inner.classList.add('touched');
+      setTimeout(() => inner.classList.remove('touched'), 300);
+    });
     plansContainer.appendChild(el);
   });
 }
