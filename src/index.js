@@ -54,7 +54,7 @@ function generateKey() {
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
-app.get('/', (req, res) => { res.send('Bot is running!'); });
+app.get('/', (req, res) => { res.sendFile(path.join(__dirname, '../public/webapp.html')); });
 
 // Telegram webhook receiver
 app.post('/webhook', async (req, res) => {
