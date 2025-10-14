@@ -548,8 +548,34 @@ input[type="checkbox"] {
   font-weight: 500;
 }
 
-.additional-plans-dropdown {
-  min-width: 180px;
+.show-more-section {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.show-more-btn {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.show-more-btn:hover {
+  background: #444444;
+  transform: translateY(-1px);
+}
+
+.additional-plans-grid {
+  margin-top: 16px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.additional-plans-grid.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .store-note {

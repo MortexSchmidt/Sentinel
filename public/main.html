@@ -37,6 +37,16 @@
         <div id="plansGrid" class="plans-grid">
           <!-- Plans will be loaded here -->
         </div>
+        <!-- Show More Plans Button (after main plans) -->
+        <div class="show-more-section">
+          <button id="showMoreBtn" class="btn-secondary show-more-btn">Показать больше тарифов</button>
+        </div>
+
+        <!-- Additional Plans Grid (hidden initially) -->
+        <div id="additionalPlansGrid" class="plans-grid additional-plans-grid hidden">
+          <!-- Additional plans will be loaded here -->
+        </div>
+
         <div class="purchase-section">
           <button id="buyBtn" class="btn-primary buy-btn" disabled>Купить выбранный тариф</button>
         </div>
@@ -81,20 +91,6 @@
 
       <div class="store-actions">
         <button id="showGiftBtn" class="btn-secondary">Подарить подписку</button>
-
-        <!-- Additional Plans Dropdown -->
-        <div class="additional-plans">
-          <label for="additionalPlansSelect">Другие тарифы:</label>
-          <select id="additionalPlansSelect" class="dropdown additional-plans-dropdown">
-            <option value="">Выберите тариф...</option>
-            <option value="1">1 День - Лицензия</option>
-            <option value="14">14 Дней - Лицензия</option>
-            <option value="60">60 Дней - Лицензия</option>
-            <option value="90">90 Дней - Лицензия</option>
-            <option value="180">180 Дней - Лицензия</option>
-          </select>
-          <button id="addPlanBtn" class="btn-secondary" style="margin-left: 8px;">Добавить</button>
-        </div>
       </div>
 
       <p class="store-note">Выберите тариф и нажмите Купить для оформления подписки</p>
