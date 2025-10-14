@@ -3,7 +3,7 @@
 :root{--bg:#0a0a0a;--card:#1a1a1a;--muted:#b0b0b0;--accent:#1565d8;--accent-contrast:#ffffff}
 body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
 h1{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
-.card{width:100%;max-width:520px;background:var(--card);padding:26px;border-radius:12px;box-shadow:0 8px 30px rgba(9,30,66,0.08)}
+.card{width:100%;max-width:920px;background:transparent;padding:0;border-radius:0;box-shadow:none}
 h1{margin:0 0 6px;font-size:22px}
 .subtitle{margin:0 0 18px;color:var(--muted)}
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
@@ -59,7 +59,7 @@ h1{margin:0 0 6px;font-size:22px}
 .retry-btn:hover{background:#0e4ba8}
 
 /* simple fade/slide animations */
-.screen{animation:fadeIn .28s ease both}
+.screen{animation:fadeIn .28s ease both; padding:26px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* plan card animations: lift, collapse to center */
