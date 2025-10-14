@@ -1,7 +1,7 @@
 .root{box-sizing:border-box}
 *{box-sizing:border-box}
-:root{--bg:#17212b;--card:#1a1a1a;--muted:#b0b0b0;--accent:#1565d8;--accent-contrast:#ffffff}
-body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
+:root{--bg:#17212b;--card:#0f1720;--muted:#9fb3bf;--accent:#2a9df4;--accent-contrast:#ffffff}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; background-image: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.00)), repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 8px); background-blend-mode: overlay}
 h1{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 .card{width:100%;max-width:920px;background:transparent;padding:0;border-radius:0;box-shadow:none}
 h1{margin:0 0 6px;font-size:22px}
@@ -13,8 +13,8 @@ h1{margin:0 0 6px;font-size:22px}
 .plan p{margin:6px 0 0;color:var(--muted);font-size:13px}
 
 /* dark cards and grid */
-.grid-plans .plan{background:#111318;color:#e6eef8;border:1px solid rgba(255,255,255,0.03)}
-.plan h3{color:#cfe6ff}
+.grid-plans .plan{background:#0b1216;color:#e6eef8;border:1px solid rgba(255,255,255,0.04)}
+.plan h3{color:var(--accent)}
 .plan p{color:var(--muted)}
 
 /* modal */
