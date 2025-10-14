@@ -5,18 +5,44 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sentinel Lua — Купить лицензию</title>
   <link rel="stylesheet" href="/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="card" id="card">
-    <img src="https://i.ibb.co/XksSPRt3/image-removebg-preview.png" alt="logo" class="corner-logo">
-    <div id="loginScreen" class="screen">
-      <h1>Sentinel Lua</h1>
-      <p class="subtitle">Войдите через Telegram (фейковая авторизация для демо)</p>
-      <div class="actions">
-        <button id="authBtn" class="primary">Войти</button>
-      </div>
+  <div class="webapp-container">
+    <!-- Header -->
+    <div class="webapp-header">
+      <h1 class="webapp-title">Sentinel Lua</h1>
+      <div class="webapp-subtitle">Купить лицензию</div>
     </div>
+
+    <!-- Main Content -->
+    <div class="webapp-content">
+      <div id="loginScreen" class="auth-screen">
+        <div class="auth-card">
+          <div class="auth-header">
+            <h2>Вход в систему</h2>
+            <p class="auth-subtitle">Войдите через Telegram для доступа к магазину</p>
+          </div>
+
+          <div class="user-profile-preview">
+            <div class="avatar-wrapper">
+              <div class="avatar-placeholder"></div>
+            </div>
+            <div class="user-details">
+              <div class="preview-name">Гость</div>
+              <div class="preview-username">@guest</div>
+              <div class="preview-status">Требуется авторизация</div>
+            </div>
+          </div>
+
+          <div class="auth-actions">
+            <button id="authBtn" class="btn-primary auth-btn">Войти через Telegram</button>
+          </div>
+
+          <div class="auth-note">
+            <p>После авторизации вы получите доступ к покупке и подарку подписок</p>
+          </div>
+        </div>
+      </div>
 
     <div id="mainScreen" class="screen hidden">
       <header class="main-header">
@@ -66,6 +92,8 @@
   <audio id="sndClick" src="/sounds/click.mp3" preload="auto"></audio>
   <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
 
-  <script src="/app.js"></script>
+     <script src="/main.js"></script>
+   </div>
+ </div>
 </body>
 </html>

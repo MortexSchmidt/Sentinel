@@ -30,6 +30,12 @@
         const user = data.user || {};
         updateUserInterface(user, data);
         pageChatId = chatId;
+
+        // If we're on webapp.html, redirect to main.html after auth
+        if (window.location.pathname.includes('webapp.html')) {
+          const redirectUrl = '/main.html' + (pageChatId ? '?chat_id=' + pageChatId : '');
+          window.location.href = redirectUrl;
+        }
       }
     } catch (error) {
       console.error('[store] error loading user data:', error);
@@ -55,9 +61,33 @@
     if (storeStatus) storeStatus.textContent = status;
   }
 
-  // Initialize store interface
+  // Initialize interfaces based on current page
+  function initInterface() {
+    console.log('[store] initializing interface for:', window.location.pathname);
+
+    if (window.location.pathname.includes('webapp.html')) {
+      initAuthInterface();
+    } else if (window.location.pathname.includes('main.html')) {
+      initStoreInterface();
+    }
+  }
+
+  // Initialize auth interface for webapp.html
+  function initAuthInterface() {
+    console.log('[auth] initializing auth interface...');
+
+    const authBtn = document.getElementById('authBtn');
+    if (authBtn) {
+      authBtn.addEventListener('click', () => {
+        console.log('[auth] auth button clicked');
+        loadUserData(); // This will redirect to main.html after auth
+      });
+    }
+  }
+
+  // Initialize store interface for main.html
   function initStoreInterface() {
-    console.log('[store] initializing interface...');
+    console.log('[store] initializing store interface...');
     loadUserData();
     renderPlans();
   }
@@ -217,11 +247,11 @@
     }
   }
 
-  // Initialize store when DOM is ready
+  // Initialize when DOM is ready
   function init() {
-    console.log('[store] DOM ready, initializing store...');
-    initStoreInterface();
-    console.log('[store] store initialized');
+    console.log('[app] DOM ready, initializing...');
+    initInterface();
+    console.log('[app] initialization complete');
   }
 
   // Start initialization
