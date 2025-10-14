@@ -55,6 +55,47 @@ function playSuccess() {
 let selected = null;
 let currentUser = null; // { chat_id, username, first_name }
 
+// show main screen after successful auth
+async function showMain() {
+  try {
+    // remove any auth prompt
+    const authPrompt = document.querySelector('.auth-code');
+    if (authPrompt) authPrompt.remove();
+    // hide login, show main
+    if (loginScreen) loginScreen.classList.add('hidden');
+    if (mainScreen) mainScreen.classList.remove('hidden');
+
+    // if we have a chat_id, fetch /me for up-to-date profile/status
+    if (currentUser && currentUser.chat_id) {
+      try {
+        const r = await fetch('/me?chat_id=' + encodeURIComponent(currentUser.chat_id));
+        const j = await r.json();
+        if (j.ok) {
+          const user = j.user || currentUser;
+          currentUser = user;
+          nameEl.textContent = (user.first_name || user.username || 'Пользователь');
+          usernameEl.textContent = user.username ? ('@' + user.username) : '';
+          if (user.avatar) { avatarEl.src = user.avatar; avatarEl.classList.remove('hidden'); }
+          if (j.active) {
+            planStatusEl.textContent = j.daysRemaining ? (j.daysRemaining + ' дней') : 'Навсегда';
+          } else {
+            planStatusEl.textContent = 'Нет подписки';
+          }
+        }
+      } catch (e) {
+        // fallback to currentUser
+        nameEl.textContent = (currentUser.first_name || currentUser.username || 'Пользователь');
+        usernameEl.textContent = currentUser.username ? ('@' + currentUser.username) : '';
+      }
+    }
+    // enable plans and render
+    render();
+    buyBtn.disabled = true;
+  } catch (e) {
+    console.error('showMain error', e);
+  }
+}
+
 function render() {
   plansContainer.innerHTML = '';
   plans.forEach(p => {
