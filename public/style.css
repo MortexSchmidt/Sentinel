@@ -2,14 +2,16 @@
 *{box-sizing:border-box}
 :root{--bg:#17212b;--card:#0f1720;--muted:#9fb3bf;--accent:#2a9df4;--accent-contrast:#ffffff}
 body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#ffffff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;
-	/* subtle texture: tiled SVG dots + soft gradients */
-	background-image:
-		linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.00)),
-		url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><circle cx='1' cy='1' r='1' fill='%23ffffff' fill-opacity='0.035'/></svg>"),
-		repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 8px);
-	background-blend-mode: overlay;
-	background-repeat: repeat, repeat, repeat;
-	background-size: auto, 6px 6px, auto;
+				/* layered gradient texture to simulate wavy pattern (no data-URI required) */
+				background-image:
+					linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)),
+					radial-gradient(circle at 20% 30%, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.00) 20%),
+					radial-gradient(circle at 70% 60%, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.00) 22%),
+					radial-gradient(circle at 40% 80%, rgba(255,255,255,0.014) 0, rgba(255,255,255,0.00) 24%),
+					repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0 2px, transparent 2px 18px);
+				background-blend-mode: overlay;
+				background-repeat: repeat;
+				background-size: auto, 500px 500px, 700px 700px, 600px 600px, auto;
 }
 h1{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
 .card{width:100%;max-width:920px;background:transparent;padding:0;border-radius:0;box-shadow:none}
