@@ -371,6 +371,10 @@
     const sendGiftBtn = document.getElementById('sendGiftBtn');
     const additionalPlansSelect = document.getElementById('additionalPlansSelect');
     const addPlanBtn = document.getElementById('addPlanBtn');
+    // Ensure we reference the show-more button and additional grid here as well
+    const showMoreBtn = document.getElementById('showMoreBtn');
+    const additionalGrid = document.getElementById('additionalPlansGrid');
+    console.log('[store] initStore elements:', { showMoreBtn: !!showMoreBtn, additionalGrid: !!additionalGrid });
 
     // Auth button
     if (authBtn) {
