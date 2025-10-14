@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 const LICENSES_FILE = path.join(__dirname, 'licenses.json');
 const USERS_FILE = path.join(__dirname, 'users.json');
+const AUTH_FILE = path.join(__dirname, 'authcodes.json');
 
 function loadLicenses() {
   try {
@@ -47,6 +48,18 @@ function loadUsers() {
 
 function saveUsers(list) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2));
+}
+
+function loadAuthCodes() {
+  try { return JSON.parse(fs.readFileSync(AUTH_FILE, 'utf8')); } catch(e) { return {}; }
+}
+
+function saveAuthCodes(obj) {
+  fs.writeFileSync(AUTH_FILE, JSON.stringify(obj, null, 2));
+}
+
+function generateCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 function priceForDays(days) {
@@ -99,6 +112,40 @@ app.post('/webhook', async (req, res) => {
         }
       } else {
         await sendMessage(chatId, welcome);
+      }
+    }
+    // handle /auth <CODE> command from user to link web session
+    if (text.startsWith('/auth')) {
+      const parts = text.split(' ');
+      if (parts.length >= 2) {
+        const code = parts[1].trim().toUpperCase();
+        const auth = loadAuthCodes();
+        const entry = auth[code];
+        if (entry && !entry.linked) {
+          // link user: save to users.json
+          const users = loadUsers();
+          const from = upd.message.from || {};
+          let user = users.find(u => u.chat_id == chatId);
+          if (!user) {
+            user = { chat_id: chatId, username: from.username || null, first_name: from.first_name || null, last_name: from.last_name || null, avatar: null, created: Date.now() };
+            users.push(user);
+          } else {
+            user.username = from.username || user.username;
+            user.first_name = from.first_name || user.first_name;
+            user.last_name = from.last_name || user.last_name;
+          }
+          saveUsers(users);
+          // mark code as linked
+          auth[code].linked = true;
+          auth[code].chat_id = chatId;
+          saveAuthCodes(auth);
+          // notify user
+          try { await sendMessage(chatId, 'Аутентификация выполнена. Вы успешно связали Web App.'); } catch(e){}
+        } else {
+          try { await sendMessage(chatId, 'Неверный или уже использованный код.'); } catch(e){}
+        }
+      } else {
+        try { await sendMessage(chatId, 'Использование: /auth CODE'); } catch(e){}
       }
     }
   }
@@ -164,6 +211,33 @@ app.post('/auth', (req, res) => {
   }
   saveUsers(users);
   res.json({ ok: true, user });
+});
+
+// generate a short auth code and return it
+app.post('/auth/generate', (req, res) => {
+  const auth = loadAuthCodes();
+  const code = generateCode();
+  auth[code] = { created: Date.now(), linked: false };
+  saveAuthCodes(auth);
+  res.json({ ok: true, code });
+});
+
+// status of auth code
+app.get('/auth/status', (req, res) => {
+  const code = (req.query.code || '').toString().toUpperCase();
+  if (!code) return res.status(400).json({ error: 'code required' });
+  const auth = loadAuthCodes();
+  const entry = auth[code];
+  if (!entry) return res.json({ ok: false, linked: false });
+  if (!entry.linked) return res.json({ ok: true, linked: false });
+  // linked -> return user
+  const users = loadUsers();
+  const user = users.find(u => u.chat_id && u.chat_id.toString() === entry.chat_id.toString());
+  const licenses = loadLicenses().filter(l => l.chat_id && l.chat_id.toString() === entry.chat_id.toString());
+  let active = null; const now = Date.now();
+  for (let i = licenses.length - 1; i >= 0; i--) { const l = licenses[i]; if (l.expires === null || l.expires > now) { active = l; break; } }
+  let daysRemaining = 0; if (active && active.expires) daysRemaining = Math.ceil((active.expires - now) / (24*60*60*1000));
+  res.json({ ok: true, linked: true, user, active, daysRemaining });
 });
 
 // get profile and license status for a given chat_id

@@ -67,24 +67,43 @@ function render() {
 }
 
   authBtn && authBtn.addEventListener('click', async () => {
-  // fake auth using Telegram WebApp init data if available
+  // try Telegram WebApp first
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
     const u = window.Telegram.WebApp.initDataUnsafe.user;
-    const chatId = u.id;
-    currentUser = { chat_id: chatId, username: u.username || null, first_name: u.first_name || null, avatar: null };
-    // post to /auth
-    try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
-    showMain();
-  playClick();
+    // we still use code flow to link with bot
+  }
+
+  // request server to generate code
+  try {
+    const r = await fetch('/auth/generate', { method: 'POST' });
+    const j = await r.json();
+    if (!j.ok) throw new Error('no code');
+    const code = j.code;
+    // show code to user and instructions
+    const promptEl = document.createElement('div');
+    promptEl.className = 'auth-code';
+    promptEl.innerHTML = `<h2>Код авторизации</h2><p>Введите команду в боте: <code>/auth ${code}</code></p><p>После ввода кода в боте подождите — страница автоматически обновится.</p>`;
+    loginScreen.appendChild(promptEl);
+    playClick();
+    // poll status
+    const poll = setInterval(async () => {
+      try {
+        const s = await fetch('/auth/status?code=' + encodeURIComponent(code));
+        const sj = await s.json();
+        if (sj.ok && sj.linked) {
+          clearInterval(poll);
+          // use returned user
+          currentUser = sj.user;
+          // update UI
+          showMain();
+        }
+      } catch(e){}
+    }, 2000);
+    return;
+  } catch (e) {
+    alert('Не удалось получить код авторизации');
     return;
   }
-  // fallback demo auth: prompt for a nickname and generate a fake chat id
-  const nick = prompt('Введите никнейм для демо:', 'demo_user');
-  if (!nick) return;
-  currentUser = { chat_id: 'demo-' + Date.now(), username: nick, first_name: nick, avatar: null };
-  try { await fetch('/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentUser) }); } catch(e){/*ignore*/}
-  showMain();
-  playClick();
 });
 
 buyBtn.addEventListener('click', async () => {
