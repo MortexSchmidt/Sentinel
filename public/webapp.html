@@ -19,23 +19,53 @@
     </div>
 
     <div id="mainScreen" class="screen hidden">
-      <div class="profile">
-        <img id="avatar" src="" alt="avatar" class="avatar hidden">
-        <div class="meta">
-          <div id="name" class="name">Гость</div>
-          <div id="username" class="username">@guest</div>
+      <header class="main-header">
+        <div class="profile">
+          <div class="avatar-wrap"><img id="avatar" src="" alt="avatar" class="avatar hidden"></div>
+          <div class="meta">
+            <div id="name" class="name">Гость</div>
+            <div id="username" class="username">@guest</div>
+          </div>
+        </div>
+        <div id="status" class="status">Статус: <span id="planStatus">Нет подписки</span></div>
+      </header>
+
+      <section class="shop">
+        <div id="plans" class="plans grid-plans"></div>
+        <div class="actions">
+          <button id="buyBtn" class="primary" disabled>Купить выбранный тариф</button>
+        </div>
+      </section>
+
+      <p class="note">Выберите тариф, нажмите Купить и выберите способ оплаты (демо).</p>
+    </div>
+
+    <!-- Purchase modal -->
+    <div id="purchaseModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="modalTitle">Оформление покупки</h3>
+        <div id="modalPlan" class="modal-plan"></div>
+        <div class="pay-methods">
+          <label class="pm"><input type="radio" name="pm" value="card" checked> Карта</label>
+          <label class="pm"><input type="radio" name="pm" value="qiwi"> QIWI</label>
+          <label class="pm"><input type="radio" name="pm" value="yoomoney"> YooMoney</label>
+        </div>
+        <div class="modal-actions">
+          <button id="confirmPay" class="primary">Оплатить (демо)</button>
+          <button id="cancelPay" class="ghost">Отмена</button>
         </div>
       </div>
+    </div>
 
-      <div id="status" class="status">Статус: <span id="planStatus">Нет подписки</span></div>
-
-      <div id="plans" class="plans"></div>
-
-      <div class="actions">
-        <button id="buyBtn" class="primary" disabled>Купить</button>
+    <!-- Success modal -->
+    <div id="successModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Покупка завершена</h3>
+        <div id="successInfo"></div>
+        <div class="modal-actions">
+          <button id="closeSuccess" class="primary">Закрыть</button>
+        </div>
       </div>
-
-      <p class="note">Оплата через ваш внешний процессор. После покупки лицензия придёт в чат.</p>
     </div>
   </div>
 

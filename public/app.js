@@ -180,13 +180,23 @@ function render() {
 
 buyBtn.addEventListener('click', async () => {
   if (!selected) return;
-  buyBtn.disabled = true;
-  buyBtn.innerText = 'Обработка...';
+  // open modal
+  const modal = document.getElementById('purchaseModal');
+  const modalPlan = document.getElementById('modalPlan');
+  modalPlan.innerHTML = `<strong>${selected.label}</strong> — ${selected.price} руб.`;
+  modal.classList.remove('hidden');
+});
 
-  // determine chat id from currentUser or Telegram WebApp
+// modal handlers
+const confirmPay = document.getElementById('confirmPay');
+const cancelPay = document.getElementById('cancelPay');
+confirmPay && confirmPay.addEventListener('click', async () => {
+  // simulate payment, then call /purchase
+  const modal = document.getElementById('purchaseModal');
+  modal.classList.add('hidden');
+  confirmPay.disabled = true;
+  confirmPay.textContent = 'Обработка...';
   const chatId = (currentUser && currentUser.chat_id) ? currentUser.chat_id : (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
-
-  // if no chat id, use demo fallback
   const effectiveChatId = chatId || ('demo-purchase-' + Date.now());
   try {
     const res = await fetch('/purchase', {
@@ -197,25 +207,31 @@ buyBtn.addEventListener('click', async () => {
     const json = await res.json();
     if (json.ok) {
       const license = json.license;
-      // show success card inside mainScreen
-      sndSuccess && sndSuccess.play().catch(()=>{});
-      const info = document.createElement('div');
-      info.className = 'purchase-success';
-      info.innerHTML = `<h2>Покупка успешна!</h2><p>Лицензия: ${license.key}</p><p>Период: ${license.days === 0 ? 'Навсегда' : license.days + ' дней'}</p><p>Цена: ${license.price} руб.</p>`;
-      mainScreen.appendChild(info);
+      // show success modal
+      const sm = document.getElementById('successModal');
+      const info = document.getElementById('successInfo');
+      info.innerHTML = `<p>Лицензия: <strong>${license.key}</strong></p><p>Период: ${license.days === 0 ? 'Навсегда' : license.days + ' дней'}</p><p>Цена: ${license.price} руб.</p>`;
+      sm.classList.remove('hidden');
       planStatusEl.innerText = license.days === 0 ? 'Навсегда' : license.days + ' дней';
-      buyBtn.disabled = false;
-      buyBtn.innerText = 'Купить';
     } else {
       alert('Ошибка: ' + (json.error || 'unknown'));
-      buyBtn.disabled = false;
-      buyBtn.innerText = 'Купить';
     }
   } catch (e) {
     alert('Сетевая ошибка');
-    buyBtn.disabled = false;
-    buyBtn.innerText = 'Купить';
   }
+  confirmPay.disabled = false;
+  confirmPay.textContent = 'Оплатить (демо)';
+});
+
+cancelPay && cancelPay.addEventListener('click', () => {
+  const modal = document.getElementById('purchaseModal');
+  modal.classList.add('hidden');
+});
+
+const closeSuccess = document.getElementById('closeSuccess');
+closeSuccess && closeSuccess.addEventListener('click', () => {
+  const sm = document.getElementById('successModal');
+  sm.classList.add('hidden');
 });
 
 render();

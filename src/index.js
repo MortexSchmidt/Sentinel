@@ -134,6 +134,33 @@ app.post('/webhook', async (req, res) => {
             user.first_name = from.first_name || user.first_name;
             user.last_name = from.last_name || user.last_name;
           }
+          // try to fetch user's profile photo and save locally
+          try {
+            if (BOT_TOKEN) {
+              const photosUrl = `https://api.telegram.org/bot${BOT_TOKEN}/getUserProfilePhotos?user_id=${chatId}&limit=1`;
+              const pr = await fetch(photosUrl);
+              const pj = await pr.json();
+              if (pj.ok && pj.result && pj.result.total_count > 0 && pj.result.photos && pj.result.photos.length > 0) {
+                const sizes = pj.result.photos[0];
+                // pick the largest size (last)
+                const best = sizes[sizes.length - 1];
+                if (best && best.file_id) {
+                  const fileMeta = await getFile(best.file_id);
+                  if (fileMeta && fileMeta.file_path) {
+                    const dest = path.join(__dirname, '../public/avatars', String(chatId) + path.extname(fileMeta.file_path));
+                    try {
+                      await downloadFilePath(fileMeta.file_path, dest);
+                      user.avatar = '/avatars/' + path.basename(dest);
+                    } catch(e) {
+                      console.error('Failed to download avatar', e);
+                    }
+                  }
+                }
+              }
+            }
+          } catch(e) {
+            console.error('avatar fetch error', e);
+          }
           saveUsers(users);
           // mark code as linked
           auth[code].linked = true;
@@ -188,6 +215,23 @@ async function sendMessage(chatId, text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
   });
+}
+
+async function getFile(fileId) {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`;
+  const r = await fetch(url);
+  const j = await r.json();
+  if (!j.ok) throw new Error('getFile failed');
+  return j.result;
+}
+
+async function downloadFilePath(filePath, dest) {
+  // filePath is like: "file/bot<token>/<path>" or just path; Telegram provides file_path
+  const url = `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('download failed');
+  const buffer = await res.buffer();
+  fs.writeFileSync(dest, buffer);
 }
 
 app.get('/licenses', (req, res) => {
