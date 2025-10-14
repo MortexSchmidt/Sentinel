@@ -19,6 +19,21 @@
         <button id="buyMain" class="primary">Купить подписку</button>
         <button id="giftMain" class="ghost">Подарить подписку</button>
       </div>
+      <!-- inline gift area -->
+      <div id="giftArea" class="gift-area hidden">
+        <div class="gift-inner">
+          <h3>Кому вы хотите подарить?</h3>
+          <input id="giftNick" placeholder="Введите @username или chat_id" />
+          <div class="gift-steps hidden" id="giftSteps">
+            <div class="gift-card">
+              <div class="gift-from">От: <div class="gift-avatar" id="giftFromAvatar"></div><div id="giftFromName"></div></div>
+              <div class="gift-to">Кому: <div class="gift-avatar" id="giftToAvatar"></div><div id="giftToName"></div></div>
+            </div>
+            <div class="gift-plans" id="giftPlans"></div>
+            <div style="margin-top:12px"><button id="sendGift" class="primary">Отправить подарок</button> <button id="cancelGift" class="ghost">Отмена</button></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script src="/main.js"></script>

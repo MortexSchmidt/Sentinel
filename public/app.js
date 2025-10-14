@@ -171,8 +171,9 @@ function render() {
             clearInterval(interval);
             // use returned user
             currentUser = sj.user;
-            // redirect to main page
-            window.location.href = '/main.html';
+            // redirect to main page with chat_id so main can load status
+            const q = '?chat_id=' + encodeURIComponent(currentUser.chat_id);
+            window.location.href = '/main.html' + q;
           }
       } catch(e){}
     }, 2000);
