@@ -67,11 +67,8 @@ function render() {
 }
 
   authBtn && authBtn.addEventListener('click', async () => {
-  // try Telegram WebApp first
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-    const u = window.Telegram.WebApp.initDataUnsafe.user;
-    // we still use code flow to link with bot
-  }
+  // hide button
+  authBtn.style.display = 'none';
 
   // request server to generate code
   try {
@@ -82,9 +79,41 @@ function render() {
     // show code to user and instructions
     const promptEl = document.createElement('div');
     promptEl.className = 'auth-code';
-    promptEl.innerHTML = `<h2>Код авторизации</h2><p>Введите команду в боте: <code>/auth ${code}</code></p><p>После ввода кода в боте подождите — страница автоматически обновится.</p>`;
+    promptEl.innerHTML = `<h2>Код авторизации</h2><p>Введите команду в боте: <code>/auth ${code}</code></p><p>После ввода кода в боте подождите — страница автоматически обновится.</p><div class="timer">05:00</div>`;
     loginScreen.appendChild(promptEl);
     playClick();
+
+    // make code clickable to copy
+    const codeEl = promptEl.querySelector('code');
+    codeEl.addEventListener('click', () => {
+      navigator.clipboard.writeText(`/auth ${code}`).then(() => {
+        codeEl.textContent = 'Скопировано!';
+        setTimeout(() => codeEl.textContent = `/auth ${code}`, 2000);
+      }).catch(() => alert('Не удалось скопировать'));
+    });
+
+    // timer 5 min
+    let timeLeft = 300; // 5*60
+    const timerEl = promptEl.querySelector('.timer');
+    const interval = setInterval(() => {
+      timeLeft--;
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+      timerEl.textContent = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        // show retry button
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'retry-btn';
+        retryBtn.textContent = 'Попробовать снова';
+        retryBtn.addEventListener('click', () => {
+          promptEl.remove();
+          authBtn.style.display = 'block';
+        });
+        promptEl.appendChild(retryBtn);
+      }
+    }, 1000);
+
     // poll status
     const poll = setInterval(async () => {
       try {
@@ -92,6 +121,7 @@ function render() {
         const sj = await s.json();
         if (sj.ok && sj.linked) {
           clearInterval(poll);
+          clearInterval(interval);
           // use returned user
           currentUser = sj.user;
           // update UI
@@ -102,6 +132,7 @@ function render() {
     return;
   } catch (e) {
     alert('Не удалось получить код авторизации');
+    authBtn.style.display = 'block';
     return;
   }
 });
