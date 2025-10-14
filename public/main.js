@@ -15,6 +15,17 @@
     const params = new URLSearchParams(window.location.search);
     pageChatId = params.get('chat_id') || null;
 
+    // Check for pending auth code in localStorage
+    const pendingCode = localStorage.getItem('pendingAuthCode');
+    if (pendingCode && !pageChatId) {
+      console.log('[auth] found pending auth code:', pendingCode);
+      // Here you would typically verify the code with your backend
+      // For now, we'll just clear it and show a message
+      localStorage.removeItem('pendingAuthCode');
+      alert('Код авторизации использован! Теперь вы можете войти в магазин.');
+      return;
+    }
+
     const chatId = pageChatId || ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
 
     if (!chatId) {
@@ -77,12 +88,62 @@
     console.log('[auth] initializing auth interface...');
 
     const authBtn = document.getElementById('authBtn');
+    const authCodeSection = document.getElementById('authCodeSection');
+    const authCodeElement = document.getElementById('authCode');
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+
     if (authBtn) {
       authBtn.addEventListener('click', () => {
-        console.log('[auth] auth button clicked');
-        loadUserData(); // This will redirect to main.html after auth
+        console.log('[auth] generating auth code...');
+
+        // Generate random 6-digit code
+        const authCode = generateAuthCode();
+        console.log('[auth] generated code:', authCode);
+
+        // Display the code
+        if (authCodeElement) {
+          authCodeElement.textContent = authCode;
+        }
+
+        // Show auth code section
+        if (authCodeSection) {
+          authCodeSection.classList.remove('hidden');
+        }
+
+        // Change button text
+        authBtn.textContent = 'Код сгенерирован';
+        authBtn.disabled = true;
+
+        // Save code for later verification
+        localStorage.setItem('pendingAuthCode', authCode);
+
+        console.log('[auth] code displayed, waiting for bot verification');
       });
     }
+
+    // Copy code functionality
+    if (copyCodeBtn) {
+      copyCodeBtn.addEventListener('click', () => {
+        const code = authCodeElement?.textContent;
+        if (code && code !== 'XXXXXX') {
+          navigator.clipboard.writeText(code).then(() => {
+            copyCodeBtn.textContent = 'Скопировано!';
+            setTimeout(() => {
+              copyCodeBtn.textContent = 'Копировать';
+            }, 2000);
+          }).catch(err => {
+            console.error('[auth] failed to copy code:', err);
+          });
+        }
+      });
+    }
+  }
+
+  // Generate random 6-digit auth code
+  function generateAuthCode() {
+    const min = 100000;
+    const max = 999999;
+    return Math.floor(Math.random() * (max - min + 1) + min).toString();
   }
 
   // Initialize store interface for main.html
