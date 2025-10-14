@@ -103,7 +103,6 @@ h1{margin:0 0 6px;font-size:22px}
 /* make hidden really non-interactive */
 .hidden{display:none !important; pointer-events:none}
 .gift-area{position:relative; z-index:9999; display:none; justify-content:center; align-items:flex-start; padding:18px; min-height:100%; box-sizing:border-box}
-.gift-area.hidden{display:none !important}
 .gift-inner{background:linear-gradient(180deg,#0b1220,#071018);padding:16px;border-radius:12px;max-width:520px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,0.4); margin-top:20px}
 .gift-area input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef8;margin:8px 0; font-size:14px}
 .gift-area input:focus{border-color:var(--accent); outline:none}
