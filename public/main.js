@@ -141,14 +141,16 @@
         // Save code for later verification
         localStorage.setItem('pendingAuthCode', authCode);
 
-        // Send code to server for registration
-        registerAuthCode(authCode).then(() => {
-          console.log('[auth] code registered on server successfully');
-        }).catch(error => {
-          console.error('[auth] failed to register code on server:', error);
-        });
+       // Send code to server for registration
+       registerAuthCode(authCode).then(() => {
+         console.log('[auth] code registered on server successfully');
+         // Start checking auth status
+         startAuthStatusCheck();
+       }).catch(error => {
+         console.error('[auth] failed to register code on server:', error);
+       });
 
-        console.log('[auth] code displayed and registered, waiting for bot verification');
+       console.log('[auth] code displayed and registered, waiting for bot verification');
       });
     }
 
@@ -203,6 +205,62 @@
     } catch (error) {
       console.error('[auth] error registering code:', error);
     }
+  }
+
+  // Start periodic auth status check
+  function startAuthStatusCheck() {
+    console.log('[auth] starting status check...');
+
+    const checkInterval = setInterval(() => {
+      const pendingCode = localStorage.getItem('pendingAuthCode');
+      if (pendingCode) {
+        verifyAuthCode(pendingCode).then(result => {
+          if (result.chat_id) {
+            console.log('[auth] auth successful, stopping checks');
+            clearInterval(checkInterval);
+            showAuthSuccess(result.chat_id);
+          }
+        }).catch(error => {
+          // Continue checking
+        });
+      } else {
+        clearInterval(checkInterval);
+      }
+    }, 2000); // Check every 2 seconds
+  }
+
+  // Show auth success UI
+  function showAuthSuccess(chatId) {
+    console.log('[auth] showing auth success UI for chat_id:', chatId);
+
+    const authSuccessActions = document.getElementById('authSuccessActions');
+    const authBtn = document.getElementById('authBtn');
+    const authCodeSection = document.getElementById('authCodeSection');
+    const goToStoreBtn = document.getElementById('goToStoreBtn');
+
+    if (authSuccessActions) {
+      authSuccessActions.style.display = 'block';
+    }
+
+    if (authBtn) {
+      authBtn.textContent = 'Авторизация успешна';
+      authBtn.style.background = 'var(--success)';
+    }
+
+    if (authCodeSection) {
+      authCodeSection.classList.add('hidden');
+    }
+
+    // Add click handler for go to store button
+    if (goToStoreBtn) {
+      goToStoreBtn.addEventListener('click', () => {
+        console.log('[auth] redirecting to store...');
+        window.location.href = '/main.html?chat_id=' + chatId;
+      });
+    }
+
+    // Clear pending code
+    localStorage.removeItem('pendingAuthCode');
   }
 
   // Initialize store interface for main.html

@@ -738,6 +738,37 @@ input[type="checkbox"] {
   color: var(--text-primary);
 }
 
+.auth-success-actions {
+  margin-top: 20px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.success-message {
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+#goToStoreBtn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--success);
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#goToStoreBtn:hover {
+  background: #22c55e;
+  transform: translateY(-1px);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
