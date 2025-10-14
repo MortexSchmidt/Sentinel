@@ -334,13 +334,23 @@
   function initStoreInterface() {
     console.log('[store] initializing store interface...');
 
-    // Check if elements exist
+    // Check if elements exist with more detailed logging
     const showMoreBtn = document.getElementById('showMoreBtn');
     const additionalGrid = document.getElementById('additionalPlansGrid');
 
-    console.log('[store] elements check:');
-    console.log('- showMoreBtn:', !!showMoreBtn);
-    console.log('- additionalPlansGrid:', !!additionalGrid);
+    console.log('[store] detailed elements check:');
+    console.log('- showMoreBtn element:', showMoreBtn);
+    console.log('- additionalPlansGrid element:', additionalGrid);
+    console.log('- showMoreBtn found:', !!showMoreBtn);
+    console.log('- additionalPlansGrid found:', !!additionalGrid);
+
+    if (showMoreBtn && additionalGrid) {
+      console.log('[store] both elements found, interface ready');
+    } else {
+      console.error('[store] missing elements!');
+      if (!showMoreBtn) console.error('[store] showMoreBtn not found');
+      if (!additionalGrid) console.error('[store] additionalPlansGrid not found');
+    }
 
     loadUserData();
     renderPlans();
@@ -486,6 +496,9 @@
         console.log('[store] toggled additional plans visibility');
       });
     }
+
+    // Initialize store functionality
+    initStore();
   }
 
   function renderPlans() {
@@ -621,6 +634,8 @@
     console.log('- user chat_id:', pageChatId);
     console.log('- auth button:', !!document.getElementById('authBtn'));
     console.log('- buy button:', !!document.getElementById('buyBtn'));
+    console.log('- showMoreBtn:', !!document.getElementById('showMoreBtn'));
+    console.log('- additionalPlansGrid:', !!document.getElementById('additionalPlansGrid'));
   };
 
   console.log('[app] script loaded');
