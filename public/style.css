@@ -1088,6 +1088,10 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
   .store-user-info { padding:12px }
 }
 
+/* Hide topbar on auth page and remove burger there */
+.auth-page .app-topbar { display: none !important; }
+.auth-page .sidebar-toggle { display: none !important; }
+
 /* Very small screens: ensure content is centered and doesn't shift left */
 @media (max-width: 420px) {
   /* let container occupy full viewport minus small gutters */
