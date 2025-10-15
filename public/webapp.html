@@ -74,7 +74,14 @@
           <div class="auth-actions">
             <button id="authBtn" class="btn-primary auth-btn" onclick="window.handleAuthBtnClick && window.handleAuthBtnClick(event)">Войти через Telegram</button>
             <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false">Не работает? Нажмите здесь</button>
+            <a id="openInBrowser" class="btn-secondary" href="#" onclick="event.preventDefault(); window.open(window.location.href, '_blank');">Открыть в браузере</a>
           </div>
+
+          <noscript>
+            <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;color:var(--text-secondary);">
+              Похоже, что JavaScript отключён или заблокирован в этом окружении. Попробуйте открыть эту страницу в обычном браузере на вашем компьютере или нажмите «Открыть в браузере».
+            </div>
+          </noscript>
 
           <!-- Auth Code Section (hidden initially) -->
           <div id="authCodeSection" class="auth-code-section hidden">
