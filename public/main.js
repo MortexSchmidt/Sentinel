@@ -389,6 +389,28 @@
         m.className = 'auth-modal';
         m.innerHTML = `<div class="auth-modal-inner"><h3>Код авторизации</h3><div id="authCodeLarge" class="auth-code-large"></div><div id="authCopiedNote" style="text-align:center;margin-top:8px;color:var(--text-secondary);">Код будет автоматически скопирован в буфер обмена.</div></div>`;
         document.body.appendChild(m);
+
+        // add emergency clear button (hidden initially) so user can recover from stuck modal
+        try {
+          const inner = m.querySelector('.auth-modal-inner') || m;
+          const clearBtn = document.createElement('button');
+          clearBtn.id = 'forceClearAuthBtn';
+          clearBtn.className = 'btn-secondary';
+          clearBtn.textContent = 'Сбросить';
+          clearBtn.style.display = 'none';
+          clearBtn.style.marginTop = '12px';
+          clearBtn.addEventListener('click', () => {
+            try { localStorage.removeItem('pendingAuthCode'); } catch (e) {}
+            try { removeAuthModals(); } catch (e) {}
+            try {
+              const authBtn = document.getElementById('authBtn');
+              if (authBtn) { authBtn.textContent = 'Войти через Telegram'; authBtn.disabled = false; authBtn.dataset.handled = '0'; }
+            } catch (e) {}
+          });
+          inner.appendChild(clearBtn);
+          // show this button after a small timeout if auth hasn't completed
+          setTimeout(() => { try { if (!window.__authCompleted) { clearBtn.style.display = 'inline-block'; } } catch (e) {} }, 12000);
+        } catch (e) { /* ignore emergency button errors */ }
       }
       const display = document.getElementById('authCodeLarge');
       if (display) display.textContent = code;
@@ -516,6 +538,14 @@
     const goToStoreBtn = document.getElementById('goToStoreBtn');
 
     if (authSuccessActions) {
+      // inject success message only when actually showing success
+      let msg = authSuccessActions.querySelector('.success-message');
+      if (!msg) {
+        msg = document.createElement('p');
+        msg.className = 'success-message';
+        msg.textContent = 'Авторизация выполнена успешно!';
+        authSuccessActions.appendChild(msg);
+      }
       authSuccessActions.style.display = 'block';
     }
 

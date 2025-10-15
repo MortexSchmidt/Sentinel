@@ -51,7 +51,7 @@
         <div class="auth-card">
             <!-- Brand: logo + product name centered at top of auth card -->
             <div class="auth-brand" aria-hidden="false">
-              <img src="https://i.ibb.co/gL8qpGRB/image-removebg-preview.png" alt="Sentinel logo" class="auth-brand-img">
+                <!-- success message injected programmatically to prevent accidental default visibility -->
             </div>
 
             <div class="auth-header">
@@ -100,10 +100,26 @@
                 if (!fm) {
                   fm = document.createElement('div'); fm.id = 'fallbackAuthModal';
                   fm.style.position = 'fixed'; fm.style.inset = '0'; fm.style.display = 'flex'; fm.style.alignItems = 'center'; fm.style.justifyContent = 'center'; fm.style.background = 'rgba(0,0,0,0.6)'; fm.style.zIndex = '2147483655';
-                  fm.innerHTML = '<div style="background:#0d1114;color:white;padding:20px;border-radius:12px;text-align:center;min-width:260px;max-width:420px;"><h3 style="margin:0 0 8px 0;">Код авторизации</h3><div id="fallbackCode" style="font-size:28px;font-weight:700;margin:12px 0;"></div><div id="fallbackCopyNote" style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px;">Код будет автоматически скопирован в буфер обмена.</div><div style="margin-top:8px;color:rgba(255,255,255,0.5);font-size:13px;">Отправьте команду боту: <code id="fallbackCommand" style="background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:6px;">/auth </code></div></div>';
+                  fm.innerHTML = '<div id="fallbackAuthInner" style="background:#0d1114;color:white;padding:20px;border-radius:12px;text-align:center;min-width:260px;max-width:420px;"><h3 style="margin:0 0 8px 0;">Код авторизации</h3><div id="fallbackCode" style="font-size:28px;font-weight:700;margin:12px 0;"></div><div id="fallbackCopyNote" style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px;">Код будет автоматически скопирован в буфер обмена.</div><div style="margin-top:8px;color:rgba(255,255,255,0.5);font-size:13px;">Отправьте команду боту: <code id="fallbackCommand" style="background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:6px;">/auth </code></div></div>';
                   document.body.appendChild(fm);
                   // lock modal so it can't be removed by other fallbacks
                   fm.dataset.locked = 'true';
+                  // add emergency clear button into fallback modal
+                  try {
+                    const inner = document.getElementById('fallbackAuthInner') || fm;
+                    const clearFallback = document.createElement('button');
+                    clearFallback.id = 'forceClearFallbackBtn';
+                    clearFallback.className = 'btn-secondary';
+                    clearFallback.textContent = 'Сбросить';
+                    clearFallback.style.display = 'none';
+                    clearFallback.style.marginTop = '12px';
+                    clearFallback.addEventListener('click', () => {
+                      try { localStorage.removeItem('pendingAuthCode'); } catch (e) {}
+                      try { fm.remove(); } catch (e) {}
+                    });
+                    inner.appendChild(clearFallback);
+                    setTimeout(() => { try { if (!window.__authCompleted) clearFallback.style.display = 'inline-block'; } catch (e) {} }, 12000);
+                  } catch (e) { /* ignore fallback emergency creation failures */ }
                 }
                 const disp = document.getElementById('fallbackCode'); if (disp) disp.textContent = code;
                 const cmdEl = document.getElementById('fallbackCommand'); if (cmdEl) cmdEl.textContent = '/auth ' + code;
