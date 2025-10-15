@@ -663,6 +663,11 @@ input[type="checkbox"] {
 /* Force auth visible button: very high z-index for environments where overlays block clicks */
 .force-auth { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 2147483647; padding: 12px 18px; border-radius: 12px; background: linear-gradient(90deg,var(--accent),var(--accent-strong)); color: #fff; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 
+/* Auth code modal styles */
+.auth-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); z-index: 2147483650; }
+.auth-modal-inner { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005)); padding: 20px 22px; border-radius: 12px; text-align: center; min-width: 280px; max-width: 520px; color: var(--text-primary); }
+.auth-code-large { font-size: 28px; font-weight: 800; background: rgba(255,255,255,0.02); padding: 10px 12px; border-radius: 8px; margin-top: 10px; }
+
 /* Auth card brand (logo + title) centered at top */
 .auth-brand { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin-bottom:14px }
 .auth-brand-img { width:72px; height:72px; object-fit:contain; border-radius:10px; background: transparent; }

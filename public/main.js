@@ -286,8 +286,10 @@
       }
       // persist and register on server
       localStorage.setItem('pendingAuthCode', authCode);
-      // show quick visual feedback even if console is closed
-      showAuthToast('Код сгенерирован');
+  // show quick visual feedback even if console is closed
+  showAuthToast('Код сгенерирован');
+  // show a large modal with the code so user can copy/send it manually
+  showAuthModal(authCode);
       registerAuthCode(authCode).then(() => {
         console.log('[auth] code registered on server successfully');
         startAuthStatusCheck();
@@ -322,6 +324,28 @@
       t.style.opacity = '1';
       setTimeout(() => { if (t) t.style.opacity = '0'; }, 1800);
     } catch (e) { /* ignore */ }
+  }
+
+  // show modal with large auth code and copy button
+  function showAuthModal(code) {
+    try {
+      let m = document.getElementById('authCodeModal');
+      if (!m) {
+        m = document.createElement('div');
+        m.id = 'authCodeModal';
+        m.className = 'auth-modal';
+        m.innerHTML = `<div class="auth-modal-inner"><h3>Код авторизации</h3><div id="authCodeLarge" class="auth-code-large"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:12px;"><button id="copyAuthCodeBtn" class="btn-primary">Скопировать код</button><button id="closeAuthModal" class="btn-secondary">Закрыть</button></div></div>`;
+        document.body.appendChild(m);
+        document.getElementById('closeAuthModal').addEventListener('click', () => { m.remove(); });
+        document.getElementById('copyAuthCodeBtn').addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(code); showAuthToast('Скопировано'); } catch (e) { alert('Не удалось скопировать'); }
+        });
+      }
+      const display = document.getElementById('authCodeLarge');
+      if (display) display.textContent = code;
+      // ensure visible
+      m.style.display = 'flex';
+    } catch (e) { console.error('[auth] showAuthModal error', e); }
   }
 
   // Register auth code on server
