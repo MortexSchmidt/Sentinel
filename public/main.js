@@ -177,6 +177,9 @@
       authBtn.addEventListener('click', handleAuthBtnClick);
       // pointerdown fallback (mobile/touch) — idempotent inside handler
       authBtn.addEventListener('pointerdown', (ev) => { if (!authBtn.dataset.handled) handleAuthBtnClick(ev); });
+      // debug hover events to diagnose blocking overlays
+      authBtn.addEventListener('pointerenter', () => console.log('[auth] pointerenter authBtn'));
+      authBtn.addEventListener('pointerleave', () => console.log('[auth] pointerleave authBtn'));
       // mark as bound so delegated fallback won't double-run
       authBtn.dataset.bound = 'true';
     }

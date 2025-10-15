@@ -650,6 +650,10 @@ input[type="checkbox"] {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Ensure auth card and its primary button stay on top (avoid invisible overlay blocking clicks) */
+.auth-page .auth-card { position: relative; z-index: 2000; }
+.auth-page #authBtn { position: relative; z-index: 2010; pointer-events: auto; }
+
 /* Auth card brand (logo + title) centered at top */
 .auth-brand { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin-bottom:14px }
 .auth-brand-img { width:72px; height:72px; object-fit:contain; border-radius:10px; background: transparent; }
