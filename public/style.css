@@ -1068,6 +1068,22 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
   .webapp-main { padding: 16px }
 }
 
+/* Mobile: hide sidebar by default and provide toggle + overlay */
+@media (max-width: 540px) {
+  .sidebar-toggle { display: inline-flex; align-items:center; justify-content:center; border:0; background:transparent; color:var(--muted); width:40px; height:40px; margin-right:8px }
+  .app-shell { grid-template-columns: 0 1fr; }
+  .app-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 78%; max-width: 320px; transform: translateX(-110%); transition: transform .28s ease; z-index: 1200; background: linear-gradient(180deg, rgba(8,10,12,0.98), rgba(6,8,10,0.98)); box-shadow: 8px 0 24px rgba(0,0,0,0.6); border-right: 1px solid rgba(255,255,255,0.02); }
+  .app-shell.sidebar-open .app-sidebar { transform: translateX(0); }
+  .sidebar-backdrop { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.45); z-index: 1100; opacity:0; visibility:hidden; transition: opacity .2s ease, visibility .2s ease; }
+  .app-shell.sidebar-open .sidebar-backdrop { display:block; opacity:1; visibility:visible; }
+  .app-sidebar .sidebar-nav { align-items:flex-start; padding-left:16px }
+  .app-logo-img { width:36px; height:36px }
+  .app-sidebar { padding: 18px 14px }
+  .sidebar-btn { width:44px; height:44px }
+  .webapp-main { padding:14px }
+  .store-user-info { padding:12px }
+}
+
 /* End of redesign overrides */
 
 /* Ensure legacy .plan elements (used by app.js) match the new visual style */

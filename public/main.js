@@ -704,6 +704,33 @@
         btn.classList.add('active');
       }));
     } catch (e) { /* no-op if sidebar not present */ }
+    // Sidebar toggle for small screens
+    try {
+      const appShell = document.querySelector('.app-shell');
+      const sidebarToggle = document.querySelector('.sidebar-toggle');
+      const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
+      if (sidebarToggle && appShell) {
+        sidebarToggle.addEventListener('click', () => {
+          const opened = appShell.classList.toggle('sidebar-open');
+          sidebarToggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+          document.body.style.overflow = opened ? 'hidden' : '';
+        });
+      }
+      if (sidebarBackdrop && appShell) {
+        sidebarBackdrop.addEventListener('click', () => {
+          appShell.classList.remove('sidebar-open');
+          sidebarToggle && sidebarToggle.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        });
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          appShell && appShell.classList.remove('sidebar-open');
+          sidebarToggle && sidebarToggle.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        }
+      });
+    } catch (e) { /* ignore mobile sidebar if DOM differs */ }
     console.log('[app] initialization complete');
   }
 
