@@ -663,6 +663,15 @@ input[type="checkbox"] {
 /* Force auth visible button: very high z-index for environments where overlays block clicks */
 .force-auth { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 2147483647; padding: 12px 18px; border-radius: 12px; background: linear-gradient(90deg,var(--accent),var(--accent-strong)); color: #fff; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 
+/* On the auth page, ensure transient overlays do not block authentication interactions */
+.auth-page .selection-backdrop,
+.auth-page .sidebar-backdrop,
+.auth-page .success-overlay,
+.auth-page .gift-area {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 /* Auth code modal styles */
 .auth-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); z-index: 2147483650; }
 .auth-modal-inner { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005)); padding: 20px 22px; border-radius: 12px; text-align: center; min-width: 280px; max-width: 520px; color: var(--text-primary); }
