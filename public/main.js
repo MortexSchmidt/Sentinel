@@ -378,6 +378,37 @@
     } catch (e) { /* ignore */ }
   }
 
+  // Debug helper: show last server responses in the UI for easier troubleshooting
+  function updateAuthDebug(label, data) {
+    try {
+      const el = document.getElementById('authDebugLog');
+      if (!el) return;
+      el.style.display = 'block';
+      const ts = new Date().toLocaleTimeString();
+      const body = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+      el.textContent = `[${ts}] ${label}\n${body}\n`;
+    } catch (e) { /* ignore */ }
+  }
+
+  // Centralized UI reset so emergency buttons and callsites can recover the page
+  function clearAuthUI() {
+    try {
+      window.__authCompleted = false;
+      try { localStorage.removeItem('pendingAuthCode'); } catch (e) {}
+      try { removeAuthModals(); } catch (e) {}
+      const successActions = document.getElementById('authSuccessActions');
+      if (successActions) {
+        successActions.style.display = 'none';
+        const msg = successActions.querySelector('.success-message'); if (msg) msg.remove();
+      }
+      const authBtn = document.getElementById('authBtn');
+      if (authBtn) { authBtn.disabled = false; authBtn.textContent = 'Войти через Telegram'; authBtn.dataset.handled = '0'; }
+      // show a small toast
+      showAuthToast('Интерфейс сброшен. Попробуйте авторизоваться ещё раз.');
+    } catch (e) { console.warn('[auth] clearAuthUI failed', e); }
+  }
+  try { window.clearAuthUI = clearAuthUI; } catch (e) {}
+
   // show modal with large auth code (non-closable while authorization is pending) and auto-copy '/auth CODE'
   function showAuthModal(code) {
     try {
@@ -439,9 +470,10 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({code: code})
       });
-      const data = await response.json();
-      console.log('[auth] register response:', data);
-      return data;
+  const data = await response.json();
+  console.log('[auth] register response:', data);
+  try { updateAuthDebug('register response', data); } catch (e) {}
+  return data;
     } catch (error) {
       console.error('[auth] error registering code:', error);
       return { ok: false, error: (error && error.message) || 'network_error' };
@@ -466,6 +498,7 @@
 
           const data = await response.json();
           console.log('[auth] verification response:', data);
+          try { updateAuthDebug('verify response', data); } catch (e) {}
 
           const chatId = extractChatIdFromVerifyResponse(data);
           if (data && data.ok && chatId) {
@@ -598,8 +631,9 @@
           body: JSON.stringify({code: pendingCode})
         });
 
-        const data = await response.json();
-        console.log('[auth] manual check response:', data);
+  const data = await response.json();
+  console.log('[auth] manual check response:', data);
+  try { updateAuthDebug('manual verify response', data); } catch (e) {}
 
         const chatId = extractChatIdFromVerifyResponse(data);
         if (data && data.ok && chatId) {

@@ -52,6 +52,7 @@
             <!-- Brand: logo + product name centered at top of auth card -->
             <div class="auth-brand" aria-hidden="false">
                 <!-- success message injected programmatically to prevent accidental default visibility -->
+                <pre id="authDebugLog" style="margin-top:12px;text-align:left;max-height:160px;overflow:auto;background:rgba(7,16,26,0.6);padding:10px;border-radius:8px;display:none;color:#e6eef8;font-size:12px;white-space:pre-wrap;"></pre>
             </div>
 
             <div class="auth-header">
@@ -116,6 +117,9 @@
                     clearFallback.addEventListener('click', () => {
                       try { localStorage.removeItem('pendingAuthCode'); } catch (e) {}
                       try { fm.remove(); } catch (e) {}
+                      try { if (window.clearAuthUI) window.clearAuthUI(); else {
+                        const successActions = document.getElementById('authSuccessActions'); if (successActions) { successActions.style.display='none'; const msg = successActions.querySelector('.success-message'); if (msg) msg.remove(); }
+                      } } catch (e) {}
                     });
                     inner.appendChild(clearFallback);
                     setTimeout(() => { try { if (!window.__authCompleted) clearFallback.style.display = 'inline-block'; } catch (e) {} }, 12000);
