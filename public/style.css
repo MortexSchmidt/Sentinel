@@ -48,7 +48,6 @@ body {
 
 .webapp-title {
   font-size: 24px;
-  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
 }
@@ -1071,7 +1070,12 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
 /* Mobile: hide sidebar by default and provide toggle + overlay */
 @media (max-width: 540px) {
   .sidebar-toggle { display: inline-flex; align-items:center; justify-content:center; border:0; background:transparent; color:var(--muted); width:40px; height:40px; margin-right:8px }
-  .app-shell { grid-template-columns: 0 1fr; }
+  /* keep reserved column width so content doesn't shift when sidebar is hidden */
+  .app-shell { grid-template-columns: 76px 1fr; }
+  /* ensure topbar layout is stable and button doesn't push content */
+  .app-topbar { position: relative; padding-left: 56px; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .sidebar-toggle { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 1250; }
   .app-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 78%; max-width: 320px; transform: translateX(-110%); transition: transform .28s ease; z-index: 1200; background: linear-gradient(180deg, rgba(8,10,12,0.98), rgba(6,8,10,0.98)); box-shadow: 8px 0 24px rgba(0,0,0,0.6); border-right: 1px solid rgba(255,255,255,0.02); }
   .app-shell.sidebar-open .app-sidebar { transform: translateX(0); }
   .sidebar-backdrop { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.45); z-index: 1100; opacity:0; visibility:hidden; transition: opacity .2s ease, visibility .2s ease; }
