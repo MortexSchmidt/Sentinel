@@ -650,6 +650,11 @@ input[type="checkbox"] {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Auth card brand (logo + title) centered at top */
+.auth-brand { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin-bottom:14px }
+.auth-brand-img { width:72px; height:72px; object-fit:contain; border-radius:10px; background: transparent; }
+.auth-brand-title { font-size:20px; font-weight:800; color: var(--text-primary); letter-spacing:0.2px }
+
 .auth-header {
   margin-bottom: 32px;
 }
