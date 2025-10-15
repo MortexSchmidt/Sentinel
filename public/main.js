@@ -39,18 +39,42 @@
         const data = await response.json();
         console.log('[auth] verification response:', data);
 
-        if (data.ok && data.chat_id) {
-          console.log('[auth] code verified, redirecting with chat_id:', data.chat_id);
+        const chatId = extractChatIdFromVerifyResponse(data);
+        if (data && data.ok && chatId) {
+          console.log('[auth] code verified, redirecting with chat_id:', chatId);
           localStorage.removeItem('pendingAuthCode');
-          // Redirect with verified chat_id
-          window.location.href = '/main.html?chat_id=' + data.chat_id;
-          return;
-        } else {
-          console.log('[auth] code verification failed:', data.error);
-          localStorage.removeItem('pendingAuthCode');
-          alert('Код авторизации неверный или уже использован. Пожалуйста, сгенерируйте новый код.');
+          window.location.href = '/main.html?chat_id=' + chatId;
           return;
         }
+
+        if (data && data.ok && !chatId) {
+          // Try to obtain user info via /me in case server didn't include chat_id in verify response
+          try {
+            const meResp = await fetch('/me');
+            const meData = await meResp.json();
+            if (meData && meData.ok && meData.user && (meData.user.chat_id || meData.user.id)) {
+              const foundId = meData.user.chat_id || meData.user.id;
+              console.log('[auth] /me returned user after verify, redirecting with chat_id:', foundId);
+              localStorage.removeItem('pendingAuthCode');
+              window.location.href = '/main.html?chat_id=' + foundId;
+              return;
+            }
+          } catch (meErr) {
+            console.warn('[auth] /me lookup failed after verify', meErr);
+          }
+
+          // If we reach here the code was accepted but the server didn't provide chat id — show info and allow manual refresh
+          console.log('[auth] code accepted but server did not return chat_id');
+          localStorage.removeItem('pendingAuthCode');
+          alert('Код принят, но сервер не вернул ваш идентификатор. Пожалуйста, обновите страницу или нажмите "Обновить статус".');
+          return;
+        }
+
+        // Not ok
+        console.log('[auth] code verification failed:', data && data.error);
+        localStorage.removeItem('pendingAuthCode');
+        alert('Код авторизации неверный или уже использован. Пожалуйста, сгенерируйте новый код.');
+        return;
       } catch (error) {
         console.error('[auth] error verifying code:', error);
         localStorage.removeItem('pendingAuthCode');
@@ -226,8 +250,8 @@
       authFallback.dataset.bound = 'true';
     }
 
-    // expose for inline or external fallbacks if needed
-    try { window.handleAuthBtnClick = handleAuthBtnClick; } catch(e){}
+  // expose for inline or external fallbacks if needed
+  try { window.handleAuthBtnClick = handleAuthBtnClick; window.startAuthStatusCheck = startAuthStatusCheck; } catch(e){}
 
     // Click on code to copy command
     if (authCodeElement) {
@@ -290,11 +314,13 @@
   showAuthToast('Код сгенерирован');
   // show a large modal with the code so user can copy/send it manually
   showAuthModal(authCode);
-      registerAuthCode(authCode).then(() => {
-        console.log('[auth] code registered on server successfully');
-        startAuthStatusCheck();
+      registerAuthCode(authCode).then((data) => {
+        if (data && data.ok) console.log('[auth] code registered on server successfully', data);
+        else console.warn('[auth] registration returned non-ok', data);
       }).catch(error => {
         console.error('[auth] failed to register code on server:', error);
+      }).finally(() => {
+        try { startAuthStatusCheck(); } catch (e) { console.error('[auth] startAuthStatusCheck error', e); }
       });
     } catch (err) {
       console.error('[auth] handleAuthBtnClick error', err);
@@ -326,46 +352,69 @@
     } catch (e) { /* ignore */ }
   }
 
-  // show modal with large auth code and copy button
+  // Helper: try to extract chat id from different possible server response shapes
+  function extractChatIdFromVerifyResponse(data) {
+    if (!data) return null;
+    if (data.chat_id) return data.chat_id;
+    if (data.chatId) return data.chatId;
+    if (data.chatid) return data.chatid;
+    if (data.user && (data.user.chat_id || data.user.id)) return data.user.chat_id || data.user.id;
+    return null;
+  }
+
+  // Helper: remove any auth-related modal UI
+  function removeAuthModals() {
+    try {
+      const m = document.getElementById('authCodeModal'); if (m) m.remove();
+      const fm = document.getElementById('fallbackAuthModal'); if (fm) fm.remove();
+    } catch (e) { /* ignore */ }
+  }
+
+  // show modal with large auth code (non-closable while authorization is pending) and auto-copy '/auth CODE'
   function showAuthModal(code) {
     try {
+      // ensure any existing modal is updated
       let m = document.getElementById('authCodeModal');
       if (!m) {
         m = document.createElement('div');
         m.id = 'authCodeModal';
         m.className = 'auth-modal';
-        m.innerHTML = `<div class="auth-modal-inner"><h3>Код авторизации</h3><div id="authCodeLarge" class="auth-code-large"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:12px;"><button id="copyAuthCodeBtn" class="btn-primary">Скопировать код</button><button id="closeAuthModal" class="btn-secondary">Закрыть</button></div></div>`;
+        m.innerHTML = `<div class="auth-modal-inner"><h3>Код авторизации</h3><div id="authCodeLarge" class="auth-code-large"></div><div id="authCopiedNote" style="text-align:center;margin-top:8px;color:var(--text-secondary);">Код будет автоматически скопирован в буфер обмена.</div></div>`;
         document.body.appendChild(m);
-        document.getElementById('closeAuthModal').addEventListener('click', () => { m.remove(); });
-        document.getElementById('copyAuthCodeBtn').addEventListener('click', async () => {
-          try { await navigator.clipboard.writeText(code); showAuthToast('Скопировано'); } catch (e) { alert('Не удалось скопировать'); }
-        });
       }
       const display = document.getElementById('authCodeLarge');
       if (display) display.textContent = code;
-      // ensure visible
+      // attempt to copy full command to clipboard
+      try {
+        navigator.clipboard.writeText('/auth ' + code).then(() => {
+          showAuthToast('/auth ' + code + ' скопировано');
+          const note = document.getElementById('authCopiedNote'); if (note) note.textContent = 'Команда скопирована в буфер обмена.';
+        }).catch((err) => {
+          console.warn('[auth] auto-copy failed', err);
+          const note = document.getElementById('authCopiedNote'); if (note) note.textContent = 'Не удалось автоматически скопировать. Скопируйте вручную: /auth ' + code;
+        });
+      } catch (e) { console.warn('[auth] clipboard error', e); }
+      // mark locked so UI cannot remove it while waiting
       m.style.display = 'flex';
+      m.dataset.locked = 'true';
     } catch (e) { console.error('[auth] showAuthModal error', e); }
   }
 
-  // Register auth code on server
+  // Register auth code on server and return parsed response
   async function registerAuthCode(code) {
+    console.log('[auth] registering code on server:', code);
     try {
-      console.log('[auth] registering code on server:', code);
       const response = await fetch('/auth/register', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({code: code})
       });
-
       const data = await response.json();
-      if (data.ok) {
-        console.log('[auth] code registered successfully');
-      } else {
-        console.error('[auth] failed to register code:', data.error);
-      }
+      console.log('[auth] register response:', data);
+      return data;
     } catch (error) {
       console.error('[auth] error registering code:', error);
+      return { ok: false, error: (error && error.message) || 'network_error' };
     }
   }
 
@@ -388,11 +437,38 @@
           const data = await response.json();
           console.log('[auth] verification response:', data);
 
-          if (data.ok && data.chat_id) {
-            console.log('[auth] auth successful, stopping checks and redirecting');
+          const chatId = extractChatIdFromVerifyResponse(data);
+          if (data && data.ok && chatId) {
+            console.log('[auth] auth successful, stopping checks and redirecting (chat_id:', chatId, ')');
             clearInterval(checkInterval);
             localStorage.removeItem('pendingAuthCode');
-            window.location.href = '/main.html?chat_id=' + data.chat_id;
+            removeAuthModals();
+            showAuthSuccess(chatId);
+            window.location.href = '/main.html?chat_id=' + chatId;
+            return;
+          }
+
+          // If server reports OK but didn't include chat_id, try /me lookup as a fallback
+          if (data && data.ok && !chatId) {
+            console.log('[auth] server reported ok but did not include chat_id — attempting /me lookup');
+            try {
+              const meResp = await fetch('/me');
+              const meData = await meResp.json();
+              if (meData && meData.ok && meData.user && (meData.user.chat_id || meData.user.id)) {
+                const foundId = meData.user.chat_id || meData.user.id;
+                console.log('[auth] /me returned user with chat id:', foundId);
+                clearInterval(checkInterval);
+                localStorage.removeItem('pendingAuthCode');
+                removeAuthModals();
+                showAuthSuccess(foundId);
+                window.location.href = '/main.html?chat_id=' + foundId;
+                return;
+              }
+            } catch (meErr) {
+              console.warn('[auth] /me lookup failed', meErr);
+            }
+            console.log('[auth] code verified but no chat_id yet, continuing checks...');
+            // continue polling — perhaps chat_id will be available next tick
           } else {
             console.log('[auth] code not verified yet, continuing checks...');
           }
@@ -409,6 +485,8 @@
   // Show auth success UI
   function showAuthSuccess(chatId) {
     console.log('[auth] showing auth success UI for chat_id:', chatId);
+    // Remove any auth modals that were blocking interaction
+    removeAuthModals();
 
     const authSuccessActions = document.getElementById('authSuccessActions');
     const authBtn = document.getElementById('authBtn');
@@ -428,12 +506,18 @@
       authCodeSection.classList.add('hidden');
     }
 
-    // Add click handler for go to store button
+    // Add click handler for go to store button if we have a chatId
     if (goToStoreBtn) {
-      goToStoreBtn.addEventListener('click', () => {
-        console.log('[auth] redirecting to store...');
-        window.location.href = '/main.html?chat_id=' + chatId;
-      });
+      if (chatId) {
+        goToStoreBtn.addEventListener('click', () => {
+          console.log('[auth] redirecting to store...');
+          window.location.href = '/main.html?chat_id=' + chatId;
+        });
+      } else {
+        // If we don't have a chat id yet, disable the button and instruct user to refresh status
+        goToStoreBtn.disabled = true;
+        goToStoreBtn.textContent = 'Ожидание подтверждения...';
+      }
     }
 
     // Add click handler for manual refresh button
@@ -465,15 +549,34 @@
         const data = await response.json();
         console.log('[auth] manual check response:', data);
 
-        if (data.ok && data.chat_id) {
-          console.log('[auth] manual check - auth successful');
+        const chatId = extractChatIdFromVerifyResponse(data);
+        if (data && data.ok && chatId) {
+          console.log('[auth] manual check - auth successful (chat_id:', chatId, ')');
           localStorage.removeItem('pendingAuthCode');
-          showAuthSuccess(data.chat_id);
+          removeAuthModals();
+          showAuthSuccess(chatId);
           return true;
-        } else {
-          console.log('[auth] manual check - code not verified yet');
+        }
+        if (data && data.ok && !chatId) {
+          // try /me lookup if verify didn't include chat_id
+          try {
+            const meResp = await fetch('/me');
+            const meData = await meResp.json();
+            if (meData && meData.ok && meData.user && (meData.user.chat_id || meData.user.id)) {
+              const foundId = meData.user.chat_id || meData.user.id;
+              localStorage.removeItem('pendingAuthCode');
+              removeAuthModals();
+              showAuthSuccess(foundId);
+              return true;
+            }
+          } catch (meErr) {
+            console.warn('[auth] manual /me lookup failed', meErr);
+          }
+          console.log('[auth] manual check - code verified but no chat_id yet');
           return false;
         }
+        console.log('[auth] manual check - code not verified yet');
+        return false;
       } catch (error) {
         console.error('[auth] error during manual check:', error);
         return false;

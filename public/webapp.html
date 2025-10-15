@@ -71,59 +71,56 @@
             </div>
           </div>
 
-          <script>
-            // Inline fallback: will call main handler if present, otherwise generate & show a code modal
+          
+          <div class="auth-actions">
+            <button id="authBtn" class="btn-primary auth-btn" onclick="__authClick()">Войти через Telegram</button>
+          </div>
+            <script>
+            // Inline fallback: will call main handler if present, otherwise generate & show a non-closable code modal
             window.__authClick = function() {
               try {
                 if (window.handleAuthBtnClick) { window.handleAuthBtnClick(); return; }
                 // generate 6-digit code
                 const code = Math.floor(Math.random() * 900000 + 100000).toString();
                 localStorage.setItem('pendingAuthCode', code);
-                // simple modal
+
+                // create a non-closable modal (no Close / Copy buttons). The command is copied automatically.
                 let fm = document.getElementById('fallbackAuthModal');
                 if (!fm) {
                   fm = document.createElement('div'); fm.id = 'fallbackAuthModal';
                   fm.style.position = 'fixed'; fm.style.inset = '0'; fm.style.display = 'flex'; fm.style.alignItems = 'center'; fm.style.justifyContent = 'center'; fm.style.background = 'rgba(0,0,0,0.6)'; fm.style.zIndex = '2147483655';
-                  fm.innerHTML = '<div style="background:#0d1114;color:white;padding:20px;border-radius:12px;text-align:center;min-width:260px;max-width:420px;"><h3 style="margin:0 0 8px 0;">Код авторизации</h3><div id="fallbackCode" style="font-size:28px;font-weight:700;margin:12px 0;"></div><div style="display:flex;gap:8px;justify-content:center;margin-top:12px;"><button id="copyFallbackCode" class="btn-primary">Скопировать</button><button id="closeFallbackCode" class="btn-secondary">Закрыть</button></div></div>';
+                  fm.innerHTML = '<div style="background:#0d1114;color:white;padding:20px;border-radius:12px;text-align:center;min-width:260px;max-width:420px;"><h3 style="margin:0 0 8px 0;">Код авторизации</h3><div id="fallbackCode" style="font-size:28px;font-weight:700;margin:12px 0;"></div><div id="fallbackCopyNote" style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px;">Код будет автоматически скопирован в буфер обмена.</div><div style="margin-top:8px;color:rgba(255,255,255,0.5);font-size:13px;">Отправьте команду боту: <code id="fallbackCommand" style="background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:6px;">/auth </code></div></div>';
                   document.body.appendChild(fm);
-                  document.getElementById('closeFallbackCode').addEventListener('click', () => fm.remove());
-                  document.getElementById('copyFallbackCode').addEventListener('click', async () => { try { await navigator.clipboard.writeText(code); alert('Скопировано'); } catch(e){ alert('Не удалось скопировать'); } });
+                  // lock modal so it can't be removed by other fallbacks
+                  fm.dataset.locked = 'true';
                 }
                 const disp = document.getElementById('fallbackCode'); if (disp) disp.textContent = code;
-                // try to register on server (best-effort)
-                fetch('/auth/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({code}) }).then(r=>r.json()).then(j=>console.log('fallback auth register', j)).catch(err=>console.error('fallback register err', err));
+                const cmdEl = document.getElementById('fallbackCommand'); if (cmdEl) cmdEl.textContent = '/auth ' + code;
+
+                // attempt to copy the full command into clipboard
+                try {
+                  navigator.clipboard.writeText('/auth ' + code).then(() => {
+                    const note = document.getElementById('fallbackCopyNote'); if (note) note.textContent = 'Команда скопирована в буфер обмена.';
+                  }).catch(() => {
+                    const note = document.getElementById('fallbackCopyNote'); if (note) note.textContent = 'Не удалось автоматически скопировать. Скопируйте вручную: /auth ' + code;
+                  });
+                } catch (e) { /* ignore clipboard errors */ }
+
+                // try to register on server (best-effort) and start client-side polling if available
+                fetch('/auth/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({code}) }).then(r=>r.json()).then(j=>{
+                  console.log('fallback auth register', j);
+                  if (window.startAuthStatusCheck) {
+                    try { window.startAuthStatusCheck(); } catch(e) { console.warn('startAuthStatusCheck not available', e); }
+                  }
+                }).catch(err=>{
+                  console.error('fallback register err', err);
+                  if (window.startAuthStatusCheck) {
+                    try { window.startAuthStatusCheck(); } catch(e) { console.warn('startAuthStatusCheck failed', e); }
+                  }
+                });
               } catch (e) { console.error('[auth] fallback error', e); }
             };
           </script>
-          <div class="auth-actions">
-            <button id="authBtn" class="btn-primary auth-btn" onclick="__authClick()">Войти через Telegram</button>
-            <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false" onclick="__authClick()">Не работает? Нажмите здесь</button>
-            <a id="openInBrowser" class="btn-secondary" href="#" onclick="event.preventDefault(); window.open(window.location.href, '_blank');">Открыть в браузере</a>
-          </div>
-
-          <noscript>
-            <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;color:var(--text-secondary);">
-              Похоже, что JavaScript отключён или заблокирован в этом окружении. Попробуйте открыть эту страницу в обычном браузере на вашем компьютере или нажмите «Открыть в браузере».
-            </div>
-          </noscript>
-
-          <!-- Auth Code Section (hidden initially) -->
-          <div id="authCodeSection" class="auth-code-section hidden">
-            <div class="auth-code-container">
-              <h3>Код авторизации</h3>
-              <div class="auth-code-display">
-                <code id="authCode" class="auth-code">XXXXXX</code>
-              </div>
-              <div class="auth-instructions">
-                <p><strong>Инструкция:</strong></p>
-                <p>1. Нажмите на код выше (он скопируется автоматически)</p>
-                <p>2. Отправьте боту команду: <code>/auth XXXXXX</code></p>
-                <p>3. Дождитесь подтверждения авторизации</p>
-                <p>4. Нажмите кнопку ниже или обновите страницу</p>
-              </div>
-              <div class="auth-success-actions" id="authSuccessActions" style="display: none;">
-                <button id="goToStoreBtn" class="btn-primary">Перейти в магазин</button>
-                <button id="refreshBtn" class="btn-secondary" style="margin-left: 8px;">Обновить статус</button>
                 <p class="success-message">Авторизация выполнена успешно!</p>
               </div>
             </div>
