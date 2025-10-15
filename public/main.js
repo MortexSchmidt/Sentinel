@@ -1169,6 +1169,29 @@
       } catch (err) { /* ignore */ }
     }
   }
+    // When user returns to the tab, do an immediate status check (helps when switching to Telegram to send /auth)
+    try {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('[auth] visibilitychange: visible -> performing manual auth status check');
+          try { checkAuthStatus(); } catch (e) { console.warn('[auth] checkAuthStatus not available', e); }
+        }
+      });
+    } catch (e) { /* ignore */ }
+
+    // If localStorage pendingAuthCode changes (another tab or process), try to start polling or clear UI
+    try {
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'pendingAuthCode') {
+          console.log('[auth] storage event: pendingAuthCode changed', e.newValue);
+          if (e.newValue) {
+            try { startAuthStatusCheck(); } catch (er) { /* ignore */ }
+          } else {
+            try { clearAuthUI(); } catch (er) { /* ignore */ }
+          }
+        }
+      });
+    } catch (e) { /* ignore storage listener errors */ }
 
   // Debug function
   window.debugStore = function() {
