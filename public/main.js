@@ -63,10 +63,13 @@
             console.warn('[auth] /me lookup failed after verify', meErr);
           }
 
-          // If we reach here the code was accepted but the server didn't provide chat id — show info and allow manual refresh
-          console.log('[auth] code accepted but server did not return chat_id');
-          localStorage.removeItem('pendingAuthCode');
-          alert('Код принят, но сервер не вернул ваш идентификатор. Пожалуйста, обновите страницу или нажмите "Обновить статус".');
+          // If we reach here the code was accepted but the server didn't provide chat id yet.
+          // Keep the pending code and start polling so we pick up the chat_id once it's assigned by the bot.
+          console.log('[auth] code accepted but server did not return chat_id — will continue polling');
+          try { showAuthModal(pendingCode); } catch (e) { /* ignore */ }
+          try { startAuthStatusCheck(); } catch (e) { console.warn('[auth] startAuthStatusCheck not available', e); }
+          showAuthToast('Код принят. Ждём подтверждения бота...');
+          // Do not remove pendingAuthCode here — allow polling to continue
           return;
         }
 
@@ -266,6 +269,11 @@
             authCodeElement.textContent = 'КОПИРОВАНО';
 
             setTimeout(() => {
+    // ensure success actions are hidden by default until explicitly set
+    try {
+      const successActionsEl = document.getElementById('authSuccessActions');
+      if (successActionsEl) successActionsEl.style.display = 'none';
+    } catch (e) { /* ignore */ }
               authCodeElement.style.background = 'var(--bg-card)';
               authCodeElement.style.borderColor = 'var(--border-color)';
               authCodeElement.textContent = code;
