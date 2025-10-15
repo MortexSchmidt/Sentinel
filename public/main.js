@@ -69,6 +69,40 @@
       } catch (err) { /* ignore */ }
     });
 
+    // Additional aggressive fallback for environments where a transparent overlay blocks clicks
+    // (e.g. some webviews). On the auth page only, capture pointerdown in the capture phase,
+    // use elementFromPoint and the auth button's bounding rect to detect intended clicks and
+    // invoke the auth handler even if another element sits above the button.
+    if (window.location.pathname.includes('webapp.html')) {
+      let lastAuthTrigger = 0;
+      document.addEventListener('pointerdown', (e) => {
+        try {
+          const authBtn = document.getElementById('authBtn');
+          if (!authBtn) return;
+          const x = e.clientX, y = e.clientY;
+          const topEl = document.elementFromPoint(x, y);
+          // If pointer is directly over the button element (or its children)
+          if (topEl && authBtn.contains(topEl)) {
+            if (!authBtn.dataset.handled) {
+              handleAuthBtnClick(e);
+            }
+            return;
+          }
+          // If an overlay is above the button, but visually the click is within button bounds — trigger handler
+          const rect = authBtn.getBoundingClientRect();
+          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+            const now = Date.now();
+            if (now - lastAuthTrigger > 300) { // simple debounce
+              lastAuthTrigger = now;
+              if (!authBtn.dataset.handled) handleAuthBtnClick(e);
+              e.preventDefault();
+              e.stopPropagation && e.stopPropagation();
+            }
+          }
+        } catch (err) { /* ignore errors in fallback */ }
+      }, true);
+    }
+
     const chatId = pageChatId || ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
 
     if (!chatId) {
