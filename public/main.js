@@ -558,6 +558,40 @@
     }
 
   // Initialize store functionality
+  // Attach floating buy button handler (purchase the currently selected plan)
+  const floatingBuyBtn = document.getElementById('floatingBuyBtn');
+  if (floatingBuyBtn) {
+    floatingBuyBtn.addEventListener('click', async (ev) => {
+      ev.stopPropagation && ev.stopPropagation();
+      const mainSelectedPlan = document.querySelector('.plan-card.selected');
+      if (!mainSelectedPlan) {
+        alert('Выберите тариф для покупки');
+        return;
+      }
+      const days = parseInt(mainSelectedPlan.dataset.days);
+      const chatId = pageChatId;
+      if (!chatId) {
+        alert('Ошибка: необходимо авторизоваться');
+        return;
+      }
+      try {
+        const response = await fetch('/purchase', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ chat_id: chatId, days })
+        });
+        const data = await response.json();
+        if (data.ok) {
+          alert('Покупка успешно завершена!');
+          window.location.reload();
+        } else {
+          alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
+        }
+      } catch (error) {
+        alert('Ошибка сети');
+      }
+    });
+  }
   }
 
   function renderPlans() {
@@ -577,18 +611,35 @@
         <div class="plan-description">${plan.description}</div>
       `;
 
-      planCard.addEventListener('click', () => {
+      // Toggle selection: clicking a selected card will deselect it;
+      // clicking another card will select that one and deselect others.
+      planCard.addEventListener('click', (e) => {
+        // prevent accidental document-level handlers from clearing selection immediately
+        e.stopPropagation && e.stopPropagation();
+        const alreadySelected = planCard.classList.contains('selected');
+        // remove selection from all cards
         document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
-        planCard.classList.add('selected');
+        if (!alreadySelected) {
+          planCard.classList.add('selected');
+        }
 
         const actions = document.getElementById('selectedPlanActions');
         const info = document.getElementById('selectedPlanInfo');
-        if (actions) actions.classList.remove('hidden');
-        if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
+        if (!alreadySelected) {
+          if (actions) actions.classList.remove('hidden');
+          if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
+          showFloatingBuyButton();
+        } else {
+          if (actions) actions.classList.add('hidden');
+          if (info) info.textContent = '';
+          hideFloatingBuyButton();
+        }
       });
 
       plansGrid.appendChild(planCard);
     });
+    // Ensure floating button visibility matches current selection state
+    updateFloatingBuyVisibility();
   }
 
   async function showGiftPreview(username) {
@@ -675,21 +726,50 @@
         <div class="plan-description">${plan.description}</div>
       `;
 
-      planCard.addEventListener('click', () => {
-        console.log('[store] additional plan clicked:', plan.label);
+
+      planCard.addEventListener('click', (e) => {
+        e.stopPropagation && e.stopPropagation();
+        const alreadySelected = planCard.classList.contains('selected');
         document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
-        planCard.classList.add('selected');
+        if (!alreadySelected) planCard.classList.add('selected');
 
         const actions = document.getElementById('selectedPlanActions');
         const info = document.getElementById('selectedPlanInfo');
-        if (actions) actions.classList.remove('hidden');
-        if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
+        if (!alreadySelected) {
+          if (actions) actions.classList.remove('hidden');
+          if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
+          showFloatingBuyButton();
+        } else {
+          if (actions) actions.classList.add('hidden');
+          if (info) info.textContent = '';
+          hideFloatingBuyButton();
+        }
       });
 
       additionalGrid.appendChild(planCard);
     });
 
     console.log('[store] additional plans rendered successfully');
+  }
+
+  /* Floating buy button helpers and global click-to-deselect handler */
+  function showFloatingBuyButton() {
+    const el = document.getElementById('floatingBuyBtn');
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.setAttribute('aria-hidden', 'false');
+  }
+
+  function hideFloatingBuyButton() {
+    const el = document.getElementById('floatingBuyBtn');
+    if (!el) return;
+    el.classList.add('hidden');
+    el.setAttribute('aria-hidden', 'true');
+  }
+
+  function updateFloatingBuyVisibility() {
+    const selected = document.querySelector('.plan-card.selected') || document.querySelector('.plan.selected');
+    if (selected) showFloatingBuyButton(); else hideFloatingBuyButton();
   }
 
   // Initialize when DOM is ready
@@ -731,6 +811,20 @@
         }
       });
     } catch (e) { /* ignore mobile sidebar if DOM differs */ }
+    // Click outside a plan card (or the floating buy button) should clear selection
+    document.addEventListener('click', (e) => {
+      // If click happened inside a plan card, the floating button, the per-plan actions area or the gift section — do nothing
+      if (e.target.closest('.plan-card') || e.target.closest('#floatingBuyBtn') || e.target.closest('#selectedPlanActions') || e.target.closest('#giftSection')) return;
+      const selected = document.querySelector('.plan-card.selected');
+      if (selected) {
+        document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+        const actions = document.getElementById('selectedPlanActions');
+        if (actions) actions.classList.add('hidden');
+        const info = document.getElementById('selectedPlanInfo');
+        if (info) info.textContent = '';
+        hideFloatingBuyButton();
+      }
+    });
     console.log('[app] initialization complete');
   }
 
@@ -751,6 +845,7 @@
   console.log('- selectedPlanActions:', !!document.getElementById('selectedPlanActions'));
   console.log('- buySelfBtn:', !!document.getElementById('buySelfBtn'));
   console.log('- giftFriendBtn:', !!document.getElementById('giftFriendBtn'));
+  console.log('- floatingBuyBtn:', !!document.getElementById('floatingBuyBtn'));
   console.log('- showMoreBtn:', !!document.getElementById('showMoreBtn'));
   console.log('- additionalPlansGrid:', !!document.getElementById('additionalPlansGrid'));
   };

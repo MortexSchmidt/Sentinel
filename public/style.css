@@ -1113,6 +1113,40 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
 
 /* End of redesign overrides */
 
+/* Floating purchase button (appears centered at bottom when a plan is selected) */
+.floating-buy {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%) translateY(16px);
+  z-index: 1400;
+  padding: 12px 22px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  color: white;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 12px 40px rgba(49,90,185,0.22);
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform .22s ease, opacity .22s ease;
+  opacity: 0;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.floating-buy:not(.hidden) {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 540px) {
+  .floating-buy { bottom: 16px; padding: 12px 18px; font-size: 14px; width: calc(100% - 32px); left: 50%; transform: translateX(-50%) translateY(12px); border-radius: 12px; }
+}
+
 /* Ensure legacy .plan elements (used by app.js) match the new visual style */
 .plan {
   background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);

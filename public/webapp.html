@@ -114,12 +114,10 @@
         <div id="plans" class="plans grid-plans"></div>
         <div id="selectedPlanActions" class="purchase-actions hidden">
           <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
-          <button id="buySelfBtn" class="btn-primary">Купить себе</button>
-          <button id="giftFriendBtn" class="btn-secondary" style="margin-left:8px;">Подарить другу</button>
         </div>
       </section>
 
-  <p class="note">Выберите тариф — появятся кнопки «Купить себе» и «Подарить другу».</p>
+  <p class="note">Выберите тариф — появится кнопка «Купить» внизу экрана.</p>
     </div>
 
     <!-- Providers area (hidden until Buy pressed) -->
@@ -155,5 +153,6 @@
   <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
 
   <script src="/main.js"></script>
+  <button id="floatingBuyBtn" class="floating-buy hidden" aria-hidden="true">Купить</button>
 </body>
 </html>

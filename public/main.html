@@ -92,8 +92,6 @@
         <!-- Actions shown when a plan is selected -->
         <div id="selectedPlanActions" class="purchase-actions hidden">
           <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
-          <button id="buySelfBtn" class="btn-primary">Купить себе</button>
-          <button id="giftFriendBtn" class="btn-secondary" style="margin-left:12px;">Подарить другу</button>
         </div>
       </div>
 
@@ -135,7 +133,7 @@
 
       <!-- Global gift button removed. Use кнопки действия при выборе тарифа -->
 
-  <p class="store-note">Выберите тариф — появятся кнопки «Купить себе» и «Подарить другу»</p>
+  <p class="store-note">Выберите тариф — появится кнопка «Купить» внизу экрана</p>
         </div> <!-- .webapp-content -->
       </div> <!-- .webapp-main -->
       <div class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
@@ -143,5 +141,6 @@
   </div> <!-- .webapp-container -->
 
   <script src="/main.js"></script>
+  <button id="floatingBuyBtn" class="floating-buy hidden" aria-hidden="true">Купить</button>
 </body>
 </html>
