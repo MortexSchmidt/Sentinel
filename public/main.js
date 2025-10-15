@@ -108,10 +108,16 @@
 
     if (storeName) storeName.textContent = user.first_name || user.username || 'Пользователь';
     if (storeUsername) storeUsername.textContent = user.username ? '@' + user.username : '';
+    // avatar handling: показываем реальный аватар если он есть, иначе показываем плейсхолдер(ы)
+    const placeholders = Array.from(document.querySelectorAll('.avatar-placeholder'));
     if (storeAvatar) {
-      if (user.avatar) {
+      if (user && user.avatar) {
         storeAvatar.src = user.avatar;
         storeAvatar.classList.remove('hidden');
+        placeholders.forEach(p => p.classList.add('hidden'));
+      } else {
+        storeAvatar.classList.add('hidden');
+        placeholders.forEach(p => p.classList.remove('hidden'));
       }
     }
 

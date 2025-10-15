@@ -75,7 +75,14 @@ async function showMain() {
           currentUser = user;
           nameEl.textContent = (user.first_name || user.username || 'Пользователь');
           usernameEl.textContent = user.username ? ('@' + user.username) : '';
-          if (user.avatar) { avatarEl.src = user.avatar; avatarEl.classList.remove('hidden'); }
+          if (user.avatar) {
+            avatarEl.src = user.avatar;
+            avatarEl.classList.remove('hidden');
+            document.querySelectorAll('.avatar-placeholder').forEach(el => el.classList.add('hidden'));
+          } else {
+            avatarEl.classList.add('hidden');
+            document.querySelectorAll('.avatar-placeholder').forEach(el => el.classList.remove('hidden'));
+          }
           if (j.active) {
             planStatusEl.textContent = j.daysRemaining ? (j.daysRemaining + ' дней') : 'Навсегда';
           } else {

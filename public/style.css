@@ -996,6 +996,7 @@ body {
 }
 
 .app-logo { width:48px; height:48px; display:flex; align-items:center; justify-content:center; }
+.app-logo-img { width:44px; height:44px; object-fit:contain; display:block }
 
 .sidebar-nav { display:flex; flex-direction:column; gap:10px; width:100%; align-items:center; margin-top:8px }
 
@@ -1021,8 +1022,9 @@ body {
 /* user info */
 .store-user-info { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.02); display:flex; align-items:center; gap:18px }
 .avatar-wrapper { width:64px; height:64px }
-.store-avatar { width:60px; height:60px; border-radius:12px; object-fit:cover; border:2px solid rgba(79,156,249,0.12) }
-.avatar-placeholder { width:60px; height:60px; border-radius:12px; background: linear-gradient(180deg,#0b1220,#0f1722); border:2px solid rgba(255,255,255,0.02); display:block }
+.store-avatar { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid rgba(79,156,249,0.12) }
+.avatar-placeholder { width:60px; height:60px; border-radius:50%; background: linear-gradient(180deg,#0b1220,#0f1722); border:2px solid rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; }
+.avatar-placeholder::before { content: ""; width:28px; height:28px; display:block; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">%3Cpath fill="%23ffffff" opacity="0.08" d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-4.4 0-8 2.6-8 6v2h16v-2c0-3.4-3.6-6-8-6z"/%3E%3C/svg%3E'); background-size:contain; background-repeat:no-repeat; background-position:center; }
 .store-name { font-size:16px; font-weight:700 }
 .store-username, .store-status { color:var(--muted); font-size:13px }
 
