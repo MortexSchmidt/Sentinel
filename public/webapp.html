@@ -112,7 +112,7 @@
 
       <section class="shop">
         <div id="plans" class="plans grid-plans"></div>
-        <div id="selectedPlanActions" class="purchase-actions hidden">
+        <div id="selectedPlanActions" class="purchase-actions">
           <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
         </div>
       </section>
@@ -153,6 +153,7 @@
   <audio id="sndSuccess" src="/sounds/success.mp3" preload="auto"></audio>
 
   <script src="/main.js"></script>
-  <button id="floatingBuyBtn" class="floating-buy hidden" aria-hidden="true">Купить</button>
+  <div id="selectionBackdrop" class="selection-backdrop hidden" aria-hidden="true"></div>
+  <button id="floatingBuyBtn" class="floating-buy" aria-hidden="true">Купить</button>
 </body>
 </html>

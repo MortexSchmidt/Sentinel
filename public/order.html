@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Оформление заказа — Sentinel Lua</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="webapp-container">
+    <div class="app-shell">
+      <aside class="app-sidebar" aria-label="Навигация">
+        <div class="app-logo" title="Sentinel">
+          <img src="https://i.ibb.co/gL8qpGRB/image-removebg-preview.png" alt="Sentinel logo" class="app-logo-img">
+        </div>
+        <nav class="sidebar-nav">
+          <button class="sidebar-btn active" title="Store" aria-label="Store">▣</button>
+          <button class="sidebar-btn" title="Visuals" aria-label="Visuals">✦</button>
+        </nav>
+      </aside>
+
+      <div class="webapp-main">
+        <div class="app-topbar">
+          <div class="topbar-left">
+            <div class="topbar-title-block">
+              <h1 class="webapp-title">Оформление заказа</h1>
+              <div class="webapp-subtitle">Подтвердите покупку</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="webapp-content">
+          <div class="content-section">
+            <h2 id="orderTitle">Подтверждение</h2>
+            <div id="planSummary" style="margin-bottom:14px;color:var(--text-secondary);"></div>
+
+            <div id="chooser" style="display:flex;gap:12px;margin-bottom:12px;">
+              <button id="optSelf" class="btn-primary">Купить себе</button>
+              <button id="optGift" class="btn-secondary">Подарок другу</button>
+            </div>
+
+            <div id="giftForm" class="gift-form hidden">
+              <div class="form-group">
+                <label>Кому подарить</label>
+                <input id="recipientInput" class="text-input" placeholder="@username или chat_id" />
+              </div>
+              <div style="margin-top:10px;">
+                <button id="continueToPay" class="btn-primary">Перейти к оплате</button>
+              </div>
+            </div>
+
+            <div id="providersArea" class="providers-area hidden">
+              <div class="providers-inner">
+                <h3>Выберите способ оплаты</h3>
+                <div id="providersList" class="providers-list" style="margin-top:12px"></div>
+                <div class="modal-actions" style="margin-top:12px;">
+                  <button id="providersBack" class="ghost">Назад</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="notAuthNotice" class="content-section hidden" style="margin-top:12px;">
+              <p>Для покупки требуется авторизация.</p>
+              <div style="margin-top:8px;"><a href="/webapp.html" class="btn-primary">Войти через Telegram</a></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+      <div id="selectionBackdrop" class="selection-backdrop hidden" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div id="successOverlay" class="success-overlay hidden">
+    <div class="success-card">
+      <h3>Оплата завершена</h3>
+      <div id="successInfo"></div>
+      <div class="modal-actions">
+        <button id="goBackToStore" class="primary">Вернуться в магазин</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/order.js"></script>
+</body>
+</html>

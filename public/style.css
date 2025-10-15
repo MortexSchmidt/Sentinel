@@ -1137,7 +1137,7 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
   gap: 10px;
 }
 
-.floating-buy:not(.hidden) {
+.floating-buy.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
@@ -1146,6 +1146,27 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
 @media (max-width: 540px) {
   .floating-buy { bottom: 16px; padding: 12px 18px; font-size: 14px; width: calc(100% - 32px); left: 50%; transform: translateX(-50%) translateY(12px); border-radius: 12px; }
 }
+
+/* Collapse inline per-plan actions to avoid layout shifts when toggling */
+.purchase-actions {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .24s ease, opacity .18s ease, padding .18s ease;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.purchase-actions.open {
+  max-height: 220px; /* enough for buttons and info */
+  opacity: 1;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 30px;
+}
+
+/* Invisible backdrop used to capture clicks to clear selection without global handlers */
+.selection-backdrop { position: fixed; inset: 0; z-index: 1150; background: transparent; }
 
 /* Ensure legacy .plan elements (used by app.js) match the new visual style */
 .plan {

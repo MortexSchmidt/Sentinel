@@ -433,10 +433,9 @@
           alert('Выберите тариф для подарка');
           return;
         }
-        // hide per-plan actions while gifting
-        if (selectedPlanActions) selectedPlanActions.classList.add('hidden');
-        if (giftSection) giftSection.classList.remove('hidden');
-        if (giftUsername) giftUsername.focus();
+  // collapse per-plan actions while gifting
+  if (giftSection) giftSection.classList.remove('hidden');
+  if (selectedPlanActions) selectedPlanActions.classList.remove('open');
 
         // populate selected plan info in gift preview
         const giftSelectedPlan = document.getElementById('giftSelectedPlan');
@@ -454,9 +453,8 @@
         console.log('[store] cancel gift');
         giftSection.classList.add('hidden');
         if (giftUsername) giftUsername.value = '';
-        if (selectedPlanActions) selectedPlanActions.classList.remove('hidden');
+        if (selectedPlanActions) selectedPlanActions.classList.add('open');
       });
-    }
 
     // Gift username input handler (show preview for current selected plan)
     if (giftUsername) {
@@ -558,10 +556,10 @@
     }
 
   // Initialize store functionality
-  // Attach floating buy button handler (purchase the currently selected plan)
+  // Attach floating buy button handler (navigate to order/checkout page)
   const floatingBuyBtn = document.getElementById('floatingBuyBtn');
   if (floatingBuyBtn) {
-    floatingBuyBtn.addEventListener('click', async (ev) => {
+    floatingBuyBtn.addEventListener('click', (ev) => {
       ev.stopPropagation && ev.stopPropagation();
       const mainSelectedPlan = document.querySelector('.plan-card.selected');
       if (!mainSelectedPlan) {
@@ -569,27 +567,8 @@
         return;
       }
       const days = parseInt(mainSelectedPlan.dataset.days);
-      const chatId = pageChatId;
-      if (!chatId) {
-        alert('Ошибка: необходимо авторизоваться');
-        return;
-      }
-      try {
-        const response = await fetch('/purchase', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ chat_id: chatId, days })
-        });
-        const data = await response.json();
-        if (data.ok) {
-          alert('Покупка успешно завершена!');
-          window.location.reload();
-        } else {
-          alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
-        }
-      } catch (error) {
-        alert('Ошибка сети');
-      }
+      const url = '/order.html?days=' + encodeURIComponent(days) + (pageChatId ? '&chat_id=' + encodeURIComponent(pageChatId) : '');
+      window.location.href = url;
     });
   }
   }
@@ -625,15 +604,15 @@
 
         const actions = document.getElementById('selectedPlanActions');
         const info = document.getElementById('selectedPlanInfo');
-        if (!alreadySelected) {
-          if (actions) actions.classList.remove('hidden');
-          if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
-          showFloatingBuyButton();
-        } else {
-          if (actions) actions.classList.add('hidden');
-          if (info) info.textContent = '';
-          hideFloatingBuyButton();
-        }
+          if (!alreadySelected) {
+            if (actions) actions.classList.add('open');
+            if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
+            showFloatingBuyButton();
+          } else {
+            if (actions) actions.classList.remove('open');
+            if (info) info.textContent = '';
+            hideFloatingBuyButton();
+          }
       });
 
       plansGrid.appendChild(planCard);
@@ -736,11 +715,11 @@
         const actions = document.getElementById('selectedPlanActions');
         const info = document.getElementById('selectedPlanInfo');
         if (!alreadySelected) {
-          if (actions) actions.classList.remove('hidden');
+          if (actions) actions.classList.add('open');
           if (info) info.textContent = `${plan.label} — ${plan.price} руб.`;
           showFloatingBuyButton();
         } else {
-          if (actions) actions.classList.add('hidden');
+          if (actions) actions.classList.remove('open');
           if (info) info.textContent = '';
           hideFloatingBuyButton();
         }
@@ -756,15 +735,19 @@
   function showFloatingBuyButton() {
     const el = document.getElementById('floatingBuyBtn');
     if (!el) return;
-    el.classList.remove('hidden');
+    el.classList.add('visible');
     el.setAttribute('aria-hidden', 'false');
+    const backdrop = document.getElementById('selectionBackdrop');
+    if (backdrop) backdrop.classList.remove('hidden');
   }
 
   function hideFloatingBuyButton() {
     const el = document.getElementById('floatingBuyBtn');
     if (!el) return;
-    el.classList.add('hidden');
+    el.classList.remove('visible');
     el.setAttribute('aria-hidden', 'true');
+    const backdrop = document.getElementById('selectionBackdrop');
+    if (backdrop) backdrop.classList.add('hidden');
   }
 
   function updateFloatingBuyVisibility() {
@@ -811,20 +794,21 @@
         }
       });
     } catch (e) { /* ignore mobile sidebar if DOM differs */ }
-    // Click outside a plan card (or the floating buy button) should clear selection
-    document.addEventListener('click', (e) => {
-      // If click happened inside a plan card, the floating button, the per-plan actions area or the gift section — do nothing
-      if (e.target.closest('.plan-card') || e.target.closest('#floatingBuyBtn') || e.target.closest('#selectedPlanActions') || e.target.closest('#giftSection')) return;
-      const selected = document.querySelector('.plan-card.selected');
-      if (selected) {
-        document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
-        const actions = document.getElementById('selectedPlanActions');
-        if (actions) actions.classList.add('hidden');
-        const info = document.getElementById('selectedPlanInfo');
-        if (info) info.textContent = '';
-        hideFloatingBuyButton();
-      }
-    });
+    // Use a dedicated backdrop for deselecting plans to avoid global click-handler reflows
+    const selectionBackdrop = document.getElementById('selectionBackdrop');
+    if (selectionBackdrop) {
+      selectionBackdrop.addEventListener('click', () => {
+        const selected = document.querySelector('.plan-card.selected');
+        if (selected) {
+          document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+          const actions = document.getElementById('selectedPlanActions');
+          if (actions) actions.classList.remove('open');
+          const info = document.getElementById('selectedPlanInfo');
+          if (info) info.textContent = '';
+          hideFloatingBuyButton();
+        }
+      });
+    }
     console.log('[app] initialization complete');
   }
 

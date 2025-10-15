@@ -90,7 +90,7 @@
         </div>
 
         <!-- Actions shown when a plan is selected -->
-        <div id="selectedPlanActions" class="purchase-actions hidden">
+        <div id="selectedPlanActions" class="purchase-actions">
           <div id="selectedPlanInfo" class="selected-plan-info" style="margin-bottom:12px;color:var(--text-secondary);"></div>
         </div>
       </div>
@@ -141,6 +141,7 @@
   </div> <!-- .webapp-container -->
 
   <script src="/main.js"></script>
-  <button id="floatingBuyBtn" class="floating-buy hidden" aria-hidden="true">Купить</button>
+  <div id="selectionBackdrop" class="selection-backdrop hidden" aria-hidden="true"></div>
+  <button id="floatingBuyBtn" class="floating-buy" aria-hidden="true">Купить</button>
 </body>
 </html>
