@@ -1092,10 +1092,10 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
 @media (max-width: 420px) {
   /* let container occupy full viewport minus small gutters */
   .webapp-container { max-width: 100%; padding-left: 12px; padding-right: 12px; }
-  /* remove reserved column so content occupies center area (sidebar overlays instead) */
-  .app-shell { grid-template-columns: 0 1fr !important; }
-  /* main area should not be offset */
-  .webapp-main { margin: 0 auto; padding-left: 0; padding-right: 0; }
+  /* switch to block layout so grid reserved columns don't shift content */
+  .app-shell { display: block; }
+  /* main area should occupy full width and be centered inside container */
+  .webapp-main { display: block; margin: 0 auto; padding-left: 0; padding-right: 0; max-width: 100%; box-sizing: border-box; }
   .webapp-content { width: 100%; }
   /* keep topbar burger spacing but don't affect layout flow */
   .app-topbar { padding-left: 56px; }
