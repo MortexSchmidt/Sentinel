@@ -910,6 +910,53 @@
     init();
   }
 
+  // Create a force auth button and diagnostic helpers on the auth page
+  if (window.location.pathname.includes('webapp.html')) {
+    try {
+      // create force-auth button (very high z-index) to bypass overlays
+      if (!document.getElementById('forceAuthBtn')) {
+        const fa = document.createElement('button');
+        fa.id = 'forceAuthBtn';
+        fa.className = 'force-auth';
+        fa.textContent = 'Войти (резерв)';
+        fa.style.position = 'fixed';
+        fa.style.left = '50%';
+        fa.style.bottom = '18px';
+        fa.style.transform = 'translateX(-50%)';
+        fa.style.zIndex = '2147483647';
+        fa.style.padding = '12px 18px';
+        fa.style.borderRadius = '12px';
+        fa.style.background = 'linear-gradient(90deg,var(--accent),var(--accent-strong))';
+        fa.style.color = '#fff';
+        fa.style.border = 'none';
+        fa.style.boxShadow = '0 8px 30px rgba(0,0,0,0.45)';
+        fa.addEventListener('click', (ev) => {
+          ev.stopPropagation && ev.stopPropagation();
+          ev.preventDefault && ev.preventDefault();
+          console.log('[auth] forceAuthBtn clicked');
+          handleAuthBtnClick(ev);
+          // also run diagnostics
+          logAuthClickDiagnostics(ev);
+        });
+        document.body.appendChild(fa);
+      }
+    } catch (e) { console.error('[auth] failed to create forceAuthBtn', e); }
+
+    // diagnostics: log what element is on top of auth button
+    function logAuthClickDiagnostics(e) {
+      try {
+        const authBtn = document.getElementById('authBtn');
+        if (!authBtn) return;
+        const rect = authBtn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const topEl = document.elementFromPoint(cx, cy);
+        console.log('[auth] diagnostics: elementFromPoint at auth center ->', topEl);
+        showAuthToast(topEl ? `${topEl.tagName}${topEl.id ? '#'+topEl.id : ''}${topEl.className ? ' .' + topEl.className : ''}` : 'none');
+      } catch (err) { /* ignore */ }
+    }
+  }
+
   // Debug function
   window.debugStore = function() {
     console.log('[store] debug info:');
