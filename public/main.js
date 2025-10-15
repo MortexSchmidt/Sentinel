@@ -59,11 +59,14 @@
     }
     // Delegated fallback: if auth button doesn't have a direct binding, handle clicks here
     document.addEventListener('click', (e) => {
-      const target = e.target;
-      if (target && target.id === 'authBtn' && !target.dataset.bound) {
-        e.preventDefault();
-        handleAuthBtnClick(e);
-      }
+      try {
+        const btn = e.target && e.target.closest && e.target.closest('#authBtn');
+        if (btn && !btn.dataset.bound && !btn.dataset.handled) {
+          e.preventDefault();
+          handleAuthBtnClick(e);
+          btn.dataset.bound = 'true';
+        }
+      } catch (err) { /* ignore */ }
     });
 
     const chatId = pageChatId || ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
@@ -172,9 +175,14 @@
 
     if (authBtn) {
       authBtn.addEventListener('click', handleAuthBtnClick);
+      // pointerdown fallback (mobile/touch) — idempotent inside handler
+      authBtn.addEventListener('pointerdown', (ev) => { if (!authBtn.dataset.handled) handleAuthBtnClick(ev); });
       // mark as bound so delegated fallback won't double-run
       authBtn.dataset.bound = 'true';
     }
+
+    // expose for inline or external fallbacks if needed
+    try { window.handleAuthBtnClick = handleAuthBtnClick; } catch(e){}
 
     // Click on code to copy command
     if (authCodeElement) {
@@ -211,8 +219,14 @@
   // Reusable handler for auth button click (extracted so we can bind robustly)
   async function handleAuthBtnClick(e) {
     try {
-      console.log('[auth] auth button clicked (handler)');
       const authBtnEl = document.getElementById('authBtn');
+      // idempotent guard: don't run twice for same element
+      if (authBtnEl && authBtnEl.dataset.handled === '1') {
+        console.log('[auth] handler invoked but already handled — skipping');
+        return;
+      }
+      if (authBtnEl) authBtnEl.dataset.handled = '1';
+      console.log('[auth] auth button clicked (handler)');
       const authCodeSection = document.getElementById('authCodeSection');
       const authCodeElement = document.getElementById('authCode');
 
