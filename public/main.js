@@ -217,6 +217,14 @@
       // mark as bound so delegated fallback won't double-run
       authBtn.dataset.bound = 'true';
     }
+    // Bind fallback button (visible alternative if primary button is blocked)
+    const authFallback = document.getElementById('authFallbackBtn');
+    if (authFallback) {
+      authFallback.addEventListener('click', (ev) => { ev.stopPropagation && ev.stopPropagation(); handleAuthBtnClick(ev); });
+      authFallback.style.zIndex = '2050';
+      authFallback.style.position = 'relative';
+      authFallback.dataset.bound = 'true';
+    }
 
     // expose for inline or external fallbacks if needed
     try { window.handleAuthBtnClick = handleAuthBtnClick; } catch(e){}
@@ -278,6 +286,8 @@
       }
       // persist and register on server
       localStorage.setItem('pendingAuthCode', authCode);
+      // show quick visual feedback even if console is closed
+      showAuthToast('Код сгенерирован');
       registerAuthCode(authCode).then(() => {
         console.log('[auth] code registered on server successfully');
         startAuthStatusCheck();
@@ -287,6 +297,31 @@
     } catch (err) {
       console.error('[auth] handleAuthBtnClick error', err);
     }
+  }
+
+  // small visual toast for auth feedback (helps when console is not open)
+  function showAuthToast(text) {
+    try {
+      let t = document.getElementById('authToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'authToast';
+        t.style.position = 'fixed';
+        t.style.left = '50%';
+        t.style.top = '18px';
+        t.style.transform = 'translateX(-50%)';
+        t.style.background = 'rgba(20,20,30,0.98)';
+        t.style.color = 'white';
+        t.style.padding = '8px 14px';
+        t.style.borderRadius = '8px';
+        t.style.zIndex = 2200;
+        t.style.boxShadow = '0 8px 30px rgba(0,0,0,0.6)';
+        document.body.appendChild(t);
+      }
+      t.textContent = text;
+      t.style.opacity = '1';
+      setTimeout(() => { if (t) t.style.opacity = '0'; }, 1800);
+    } catch (e) { /* ignore */ }
   }
 
   // Register auth code on server
