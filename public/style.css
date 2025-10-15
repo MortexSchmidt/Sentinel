@@ -1088,6 +1088,19 @@ input[type="checkbox"]:checked::after { transform: translateX(20px); box-shadow:
   .store-user-info { padding:12px }
 }
 
+/* Very small screens: ensure content is centered and doesn't shift left */
+@media (max-width: 420px) {
+  /* let container occupy full viewport minus small gutters */
+  .webapp-container { max-width: 100%; padding-left: 12px; padding-right: 12px; }
+  /* remove reserved column so content occupies center area (sidebar overlays instead) */
+  .app-shell { grid-template-columns: 0 1fr !important; }
+  /* main area should not be offset */
+  .webapp-main { margin: 0 auto; padding-left: 0; padding-right: 0; }
+  .webapp-content { width: 100%; }
+  /* keep topbar burger spacing but don't affect layout flow */
+  .app-topbar { padding-left: 56px; }
+}
+
 /* End of redesign overrides */
 
 /* Ensure legacy .plan elements (used by app.js) match the new visual style */
