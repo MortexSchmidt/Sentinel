@@ -57,6 +57,14 @@
         return;
       }
     }
+    // Delegated fallback: if auth button doesn't have a direct binding, handle clicks here
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target && target.id === 'authBtn' && !target.dataset.bound) {
+        e.preventDefault();
+        handleAuthBtnClick(e);
+      }
+    });
 
     const chatId = pageChatId || ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null);
 
@@ -163,42 +171,9 @@
     const authCodeElement = document.getElementById('authCode');
 
     if (authBtn) {
-      authBtn.addEventListener('click', () => {
-        console.log('[auth] generating auth code...');
-
-        // Generate random 6-digit code
-        const authCode = generateAuthCode();
-        console.log('[auth] generated code:', authCode);
-        console.log('[auth] saving to localStorage...');
-
-        // Display the code
-        if (authCodeElement) {
-          authCodeElement.textContent = authCode;
-        }
-
-        // Show auth code section
-        if (authCodeSection) {
-          authCodeSection.classList.remove('hidden');
-        }
-
-        // Change button text
-        authBtn.textContent = 'Код сгенерирован';
-        authBtn.disabled = true;
-
-        // Save code for later verification
-        localStorage.setItem('pendingAuthCode', authCode);
-
-       // Send code to server for registration
-       registerAuthCode(authCode).then(() => {
-         console.log('[auth] code registered on server successfully');
-         // Start checking auth status
-         startAuthStatusCheck();
-       }).catch(error => {
-         console.error('[auth] failed to register code on server:', error);
-       });
-
-       console.log('[auth] code displayed and registered, waiting for bot verification');
-      });
+      authBtn.addEventListener('click', handleAuthBtnClick);
+      // mark as bound so delegated fallback won't double-run
+      authBtn.dataset.bound = 'true';
     }
 
     // Click on code to copy command
@@ -231,6 +206,36 @@
     const min = 100000;
     const max = 999999;
     return Math.floor(Math.random() * (max - min + 1) + min).toString();
+  }
+
+  // Reusable handler for auth button click (extracted so we can bind robustly)
+  async function handleAuthBtnClick(e) {
+    try {
+      console.log('[auth] auth button clicked (handler)');
+      const authBtnEl = document.getElementById('authBtn');
+      const authCodeSection = document.getElementById('authCodeSection');
+      const authCodeElement = document.getElementById('authCode');
+
+      // Generate code and show
+      const authCode = generateAuthCode();
+      if (authCodeElement) authCodeElement.textContent = authCode;
+      if (authCodeSection) authCodeSection.classList.remove('hidden');
+      if (authBtnEl) {
+        authBtnEl.textContent = 'Код сгенерирован';
+        authBtnEl.disabled = true;
+        authBtnEl.dataset.bound = 'true';
+      }
+      // persist and register on server
+      localStorage.setItem('pendingAuthCode', authCode);
+      registerAuthCode(authCode).then(() => {
+        console.log('[auth] code registered on server successfully');
+        startAuthStatusCheck();
+      }).catch(error => {
+        console.error('[auth] failed to register code on server:', error);
+      });
+    } catch (err) {
+      console.error('[auth] handleAuthBtnClick error', err);
+    }
   }
 
   // Register auth code on server
