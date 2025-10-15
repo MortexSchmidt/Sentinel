@@ -1013,6 +1013,12 @@ body {
 .app-topbar .webapp-title { font-size:18px; font-weight:700; color: #e6eef8; }
 .app-topbar .webapp-subtitle { font-size:13px; color:var(--muted); }
 
+/* Topbar title block: align title + subtitle vertically centered next to burger */
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.topbar-title-block { display:flex; flex-direction:column; justify-content:center; }
+.webapp-title { margin: 0; line-height: 1; }
+.webapp-subtitle { margin: 0; font-size: 13px; color: var(--muted); opacity: 0.9; }
+
 .header-user-meta { font-size:13px; color:var(--muted); display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background: linear-gradient(90deg, rgba(255,255,255,0.01), transparent); border:1px solid rgba(255,255,255,0.02); }
 .header-user-meta .dot { color: rgba(255,255,255,0.12); }
 
