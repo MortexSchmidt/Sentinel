@@ -485,8 +485,22 @@
   // Show auth success UI
   function showAuthSuccess(chatId) {
     console.log('[auth] showing auth success UI for chat_id:', chatId);
+    // mark completed and clear pending code as early as possible to avoid race with fallbacks
+    try { window.__authCompleted = true; } catch (e) {}
+    try { localStorage.removeItem('pendingAuthCode'); } catch (e) {}
     // Remove any auth modals that were blocking interaction
     removeAuthModals();
+
+    // Extra safety: remove any late-created auth modals for next few seconds (race protection)
+    try {
+      const selectors = ['#authCodeModal', '#fallbackAuthModal', '.auth-modal'];
+      selectors.forEach(sel => document.querySelectorAll(sel).forEach(el => el.remove()));
+      const observer = new MutationObserver(() => {
+        try { selectors.forEach(sel => document.querySelectorAll(sel).forEach(el => { console.log('[auth] observer removing late modal', sel); el.remove(); })); } catch (e) { /* ignore */ }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => { try { observer.disconnect(); } catch (e) {} }, 7000);
+    } catch (e) { /* best-effort cleanup */ }
 
     const authSuccessActions = document.getElementById('authSuccessActions');
     const authBtn = document.getElementById('authBtn');

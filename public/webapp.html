@@ -79,10 +79,21 @@
             // Inline fallback: will call main handler if present, otherwise generate & show a non-closable code modal
             window.__authClick = function() {
               try {
+                // If page already recorded successful auth, don't open a new modal
+                if (window.__authCompleted || (document.getElementById('authSuccessActions') && document.getElementById('authSuccessActions').style.display !== 'none')) {
+                  try { alert('Авторизация уже выполнена.'); } catch (e) { /* ignore */ }
+                  return;
+                }
                 if (window.handleAuthBtnClick) { window.handleAuthBtnClick(); return; }
                 // generate 6-digit code
                 const code = Math.floor(Math.random() * 900000 + 100000).toString();
+                // persist code first
                 localStorage.setItem('pendingAuthCode', code);
+
+                // If success already happened in another tab or process, abort creating modal
+                if (window.__authCompleted || (document.getElementById('authSuccessActions') && document.getElementById('authSuccessActions').style.display !== 'none')) {
+                  return;
+                }
 
                 // create a non-closable modal (no Close / Copy buttons). The command is copied automatically.
                 let fm = document.getElementById('fallbackAuthModal');
