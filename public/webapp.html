@@ -71,9 +71,33 @@
             </div>
           </div>
 
+          <script>
+            // Inline fallback: will call main handler if present, otherwise generate & show a code modal
+            window.__authClick = function() {
+              try {
+                if (window.handleAuthBtnClick) { window.handleAuthBtnClick(); return; }
+                // generate 6-digit code
+                const code = Math.floor(Math.random() * 900000 + 100000).toString();
+                localStorage.setItem('pendingAuthCode', code);
+                // simple modal
+                let fm = document.getElementById('fallbackAuthModal');
+                if (!fm) {
+                  fm = document.createElement('div'); fm.id = 'fallbackAuthModal';
+                  fm.style.position = 'fixed'; fm.style.inset = '0'; fm.style.display = 'flex'; fm.style.alignItems = 'center'; fm.style.justifyContent = 'center'; fm.style.background = 'rgba(0,0,0,0.6)'; fm.style.zIndex = '2147483655';
+                  fm.innerHTML = '<div style="background:#0d1114;color:white;padding:20px;border-radius:12px;text-align:center;min-width:260px;max-width:420px;"><h3 style="margin:0 0 8px 0;">Код авторизации</h3><div id="fallbackCode" style="font-size:28px;font-weight:700;margin:12px 0;"></div><div style="display:flex;gap:8px;justify-content:center;margin-top:12px;"><button id="copyFallbackCode" class="btn-primary">Скопировать</button><button id="closeFallbackCode" class="btn-secondary">Закрыть</button></div></div>';
+                  document.body.appendChild(fm);
+                  document.getElementById('closeFallbackCode').addEventListener('click', () => fm.remove());
+                  document.getElementById('copyFallbackCode').addEventListener('click', async () => { try { await navigator.clipboard.writeText(code); alert('Скопировано'); } catch(e){ alert('Не удалось скопировать'); } });
+                }
+                const disp = document.getElementById('fallbackCode'); if (disp) disp.textContent = code;
+                // try to register on server (best-effort)
+                fetch('/auth/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({code}) }).then(r=>r.json()).then(j=>console.log('fallback auth register', j)).catch(err=>console.error('fallback register err', err));
+              } catch (e) { console.error('[auth] fallback error', e); }
+            };
+          </script>
           <div class="auth-actions">
-            <button id="authBtn" class="btn-primary auth-btn" onclick="alert('DEBUG: кнопка авторизации нажата'); window.handleAuthBtnClick && window.handleAuthBtnClick(event)">Войти через Telegram</button>
-            <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false" onclick="alert('DEBUG: резервная кнопка авторизации нажата');">Не работает? Нажмите здесь</button>
+            <button id="authBtn" class="btn-primary auth-btn" onclick="__authClick()">Войти через Telegram</button>
+            <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false" onclick="__authClick()">Не работает? Нажмите здесь</button>
             <a id="openInBrowser" class="btn-secondary" href="#" onclick="event.preventDefault(); window.open(window.location.href, '_blank');">Открыть в браузере</a>
           </div>
 
