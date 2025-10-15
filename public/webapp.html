@@ -72,8 +72,8 @@
           </div>
 
           <div class="auth-actions">
-            <button id="authBtn" class="btn-primary auth-btn" onclick="window.handleAuthBtnClick && window.handleAuthBtnClick(event)">Войти через Telegram</button>
-            <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false">Не работает? Нажмите здесь</button>
+            <button id="authBtn" class="btn-primary auth-btn" onclick="alert('DEBUG: кнопка авторизации нажата'); window.handleAuthBtnClick && window.handleAuthBtnClick(event)">Войти через Telegram</button>
+            <button id="authFallbackBtn" class="btn-secondary auth-fallback" aria-hidden="false" onclick="alert('DEBUG: резервная кнопка авторизации нажата');">Не работает? Нажмите здесь</button>
             <a id="openInBrowser" class="btn-secondary" href="#" onclick="event.preventDefault(); window.open(window.location.href, '_blank');">Открыть в браузере</a>
           </div>
 
